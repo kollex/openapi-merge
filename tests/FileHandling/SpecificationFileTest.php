@@ -19,8 +19,8 @@ class SpecificationFileTest extends TestCase
     public function testGetter(): void
     {
         $stubSpecObject = $this->createStub(OpenApi::class);
-        $fileStub       = new File('example.file');
-        $sut            = new SpecificationFile($fileStub, $stubSpecObject);
+        $fileStub = new File('example.file');
+        $sut = new SpecificationFile($fileStub, $stubSpecObject);
 
         self::assertSame($fileStub, $sut->getFile());
         self::assertSame($stubSpecObject, $sut->getOpenApi());

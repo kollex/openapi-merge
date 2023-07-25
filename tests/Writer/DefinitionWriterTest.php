@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mthole\OpenApiMerge\Tests\Writer;
 
 use cebe\openapi\spec\OpenApi;
-use Generator;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Writer\DefinitionWriter;
@@ -13,47 +12,45 @@ use Mthole\OpenApiMerge\Writer\Exception\InvalidFileTypeException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @uses \Mthole\OpenApiMerge\FileHandling\File
- * @uses \Mthole\OpenApiMerge\FileHandling\SpecificationFile
- * @uses \Mthole\OpenApiMerge\Writer\Exception\InvalidFileTypeException
+ * @uses   \Mthole\OpenApiMerge\FileHandling\File
+ * @uses   \Mthole\OpenApiMerge\FileHandling\SpecificationFile
+ * @uses   \Mthole\OpenApiMerge\Writer\Exception\InvalidFileTypeException
  *
  * @covers \Mthole\OpenApiMerge\Writer\DefinitionWriter
  */
 class DefinitionWriterTest extends TestCase
 {
-    /**
-     * @dataProvider validSpecificationFiles
-     */
+    /** @dataProvider validSpecificationFiles */
     public function testWrite(SpecificationFile $specificationFile): void
     {
-        $sut    = new DefinitionWriter();
+        $sut = new DefinitionWriter();
         $result = $sut->write($specificationFile);
         self::assertNotEmpty($result);
     }
 
-    /** @return Generator<SpecificationFile[]> */
-    public function validSpecificationFiles(): Generator
+    /** @return \Generator<SpecificationFile[]> */
+    public static function validSpecificationFiles(): \Generator
     {
         $specObject = new OpenApi([]);
 
         yield [
             new SpecificationFile(
                 new File('dummy.yml'),
-                $specObject
+                $specObject,
             ),
         ];
 
         yield [
             new SpecificationFile(
                 new File('dummy.yaml'),
-                $specObject
+                $specObject,
             ),
         ];
 
         yield [
             new SpecificationFile(
                 new File('dummy.json'),
-                $specObject
+                $specObject,
             ),
         ];
     }
@@ -62,7 +59,7 @@ class DefinitionWriterTest extends TestCase
     {
         $specificationFile = new SpecificationFile(
             new File('dummy.neon'),
-            new OpenApi([])
+            new OpenApi([]),
         );
 
         $sut = new DefinitionWriter();
@@ -75,7 +72,7 @@ class DefinitionWriterTest extends TestCase
     {
         $specificationFile = new SpecificationFile(
             new File('dummy.json'),
-            new OpenApi(['openapi' => '3.0.0'])
+            new OpenApi(['openapi' => '3.0.0']),
         );
 
         $sut = new DefinitionWriter();
@@ -85,7 +82,7 @@ class DefinitionWriterTest extends TestCase
                 "openapi": "3.0.0"
             }
             JSON,
-            $sut->writeToJson($specificationFile)
+            $sut->writeToJson($specificationFile),
         );
     }
 
@@ -93,7 +90,7 @@ class DefinitionWriterTest extends TestCase
     {
         $specificationFile = new SpecificationFile(
             new File('dummy.yml'),
-            new OpenApi(['openapi' => '3.0.0'])
+            new OpenApi(['openapi' => '3.0.0']),
         );
 
         $sut = new DefinitionWriter();
@@ -102,7 +99,7 @@ class DefinitionWriterTest extends TestCase
             openapi: 3.0.0
 
             YML,
-            $sut->writeToYaml($specificationFile)
+            $sut->writeToYaml($specificationFile),
         );
     }
 }

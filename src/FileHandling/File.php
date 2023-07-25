@@ -6,35 +6,22 @@ namespace Mthole\OpenApiMerge\FileHandling;
 
 use Mthole\OpenApiMerge\FileHandling\Exception\IOException;
 
-use function getcwd;
-use function pathinfo;
-use function realpath;
-use function strpos;
-
-use const DIRECTORY_SEPARATOR;
-use const PATHINFO_EXTENSION;
-
 final class File
 {
-    private string $filename;
-
-    public function __construct(string $filename)
+    public function __construct(private string $filename)
     {
-        $this->filename = $filename;
     }
 
     public function getFileExtension(): string
     {
-        return pathinfo($this->filename, PATHINFO_EXTENSION);
+        return pathinfo($this->filename, \PATHINFO_EXTENSION);
     }
 
     public function getAbsolutePath(): string
     {
         $fullFilename = realpath($this->filename);
-        if ($fullFilename === false) {
-            throw IOException::createWithNonExistingFile(
-                $this->createAbsoluteFilePath($this->filename)
-            );
+        if (false === $fullFilename) {
+            throw IOException::createWithNonExistingFile($this->createAbsoluteFilePath($this->filename));
         }
 
         return $fullFilename;
@@ -42,10 +29,10 @@ final class File
 
     private function createAbsoluteFilePath(string $filename): string
     {
-        if (strpos($filename, '/') === 0) {
+        if (0 === strpos($filename, '/')) {
             return $filename;
         }
 
-        return getcwd() . DIRECTORY_SEPARATOR . $filename;
+        return getcwd() . \DIRECTORY_SEPARATOR . $filename;
     }
 }

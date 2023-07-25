@@ -9,15 +9,10 @@ use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Reader\FileReader;
 
-use function array_merge;
-
 class OpenApiMerge implements OpenApiMergeInterface
 {
-    private FileReader $openApiReader;
-
-    public function __construct(FileReader $openApiReader)
+    public function __construct(private FileReader $openApiReader)
     {
-        $this->openApiReader = $openApiReader;
     }
 
     public function mergeFiles(File $baseFile, File ...$additionalFiles): SpecificationFile
@@ -30,18 +25,18 @@ class OpenApiMerge implements OpenApiMergeInterface
             $mergedOpenApiDefinition->paths = new Paths(
                 array_merge(
                     $mergedOpenApiDefinition->paths->getPaths(),
-                    $additionalDefinition->paths->getPaths()
-                )
+                    $additionalDefinition->paths->getPaths(),
+                ),
             );
         }
 
-        if ($mergedOpenApiDefinition->components !== null) {
+        if (null !== $mergedOpenApiDefinition->components) {
             $mergedOpenApiDefinition->components->schemas = [];
         }
 
         return new SpecificationFile(
             $baseFile,
-            $mergedOpenApiDefinition
+            $mergedOpenApiDefinition,
         );
     }
 }

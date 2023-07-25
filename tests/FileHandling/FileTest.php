@@ -4,14 +4,9 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests\FileHandling;
 
-use Generator;
 use Mthole\OpenApiMerge\FileHandling\Exception\IOException;
 use Mthole\OpenApiMerge\FileHandling\File;
 use PHPUnit\Framework\TestCase;
-
-use function getcwd;
-use function preg_quote;
-use function str_replace;
 
 /**
  * @uses \Mthole\OpenApiMerge\FileHandling\Exception\IOException
@@ -20,17 +15,15 @@ use function str_replace;
  */
 class FileTest extends TestCase
 {
-    /**
-     * @dataProvider fileExtensionProvider
-     */
+    /** @dataProvider fileExtensionProvider */
     public function testGetFileExtension(string $filename, string $expectedExtension): void
     {
         $sut = new File($filename);
         self::assertSame($expectedExtension, $sut->getFileExtension());
     }
 
-    /** @return Generator<array<int, string>> */
-    public function fileExtensionProvider(): Generator
+    /** @return \Generator<array<int, string>> */
+    public static function fileExtensionProvider(): \Generator
     {
         yield ['base.yml', 'yml'];
         yield ['base.yaml', 'yaml'];
@@ -53,7 +46,7 @@ class FileTest extends TestCase
     public function testGetAbsolutePathWithAbsoluteInvalidFile(): void
     {
         $invalidFilename = __FILE__ . '-nonexisting.dat';
-        $sut             = new File($invalidFilename);
+        $sut = new File($invalidFilename);
 
         $this->expectException(IOException::class);
         $this->expectExceptionMessageMatches('~"' . preg_quote($invalidFilename, '~') . '"~');
@@ -66,18 +59,18 @@ class FileTest extends TestCase
         $filename = str_replace(
             getcwd() ?: '',
             '.',
-            __FILE__
+            __FILE__,
         );
 
         self::assertNotSame(
             __FILE__,
-            $filename
+            $filename,
         );
 
         $sut = new File($filename);
         self::assertSame(
             __FILE__,
-            $sut->getAbsolutePath()
+            $sut->getAbsolutePath(),
         );
     }
 }

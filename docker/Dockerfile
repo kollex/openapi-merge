@@ -1,6 +1,10 @@
-FROM php:7.4-cli-alpine
+FROM php:8.1-cli-alpine
 
 RUN php --version
+
+RUN docker-php-ext-configure pcntl --enable-pcntl \
+  && docker-php-ext-install \
+    pcntl
 
 ENV COMPOSER_ALLOW_SUPERUSER 1
 

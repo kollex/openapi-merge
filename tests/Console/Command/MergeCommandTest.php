@@ -5,22 +5,15 @@ declare(strict_types=1);
 namespace Mthole\OpenApiMerge\Tests\Console\Command;
 
 use cebe\openapi\spec\OpenApi;
-use Generator;
 use Mthole\OpenApiMerge\Console\Command\MergeCommand;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\OpenApiMergeInterface;
 use Mthole\OpenApiMerge\Writer\DefinitionWriterInterface;
+use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\TrimmedBufferOutput;
-use Throwable;
-
-use function sprintf;
-use function sys_get_temp_dir;
-use function unlink;
-
-use const PHP_EOL;
 
 /**
  * @uses \Mthole\OpenApiMerge\FileHandling\File
@@ -30,26 +23,24 @@ use const PHP_EOL;
  */
 class MergeCommandTest extends TestCase
 {
-    /**
-     * @dataProvider invalidArgumentsDataProvider
+    /** @dataProvider invalidArgumentsDataProvider
+     * @throws Exception
      */
     public function testRunWithInvalidArguments(ArrayInput $input): void
     {
         $sut = new MergeCommand(
             $this->createStub(OpenApiMergeInterface::class),
-            $this->createStub(DefinitionWriterInterface::class)
+            $this->createStub(DefinitionWriterInterface::class),
         );
 
         $output = new TrimmedBufferOutput(1024);
 
-        self::expectException(Throwable::class);
+        self::expectException(\Throwable::class);
         $sut->run($input, $output);
     }
 
-    /**
-     * @return Generator<array<int, ArrayInput>>
-     */
-    public function invalidArgumentsDataProvider(): Generator
+    /** @return \Generator<array<int, ArrayInput>> */
+    public static function invalidArgumentsDataProvider(): \Generator
     {
         yield [
             new ArrayInput([
@@ -75,12 +66,12 @@ class MergeCommandTest extends TestCase
 
     public function testRun(): void
     {
-        $baseFile   = new File('basefile.yml');
+        $baseFile = new File('basefile.yml');
         $secondFile = new File('secondfile.yml');
 
         $mergeResultStub = new SpecificationFile(
             new File('dummy'),
-            $this->createStub(OpenApi::class)
+            $this->createStub(OpenApi::class),
         );
 
         $mergeMock = $this->createMock(OpenApiMergeInterface::class);
@@ -97,10 +88,10 @@ class MergeCommandTest extends TestCase
 
         $sut = new MergeCommand(
             $mergeMock,
-            $definitionWriterMock
+            $definitionWriterMock,
         );
 
-        $input  = new ArrayInput([
+        $input = new ArrayInput([
             'basefile' => 'basefile.yml',
             'additionalFiles' => ['secondfile.yml'],
         ]);
@@ -112,40 +103,40 @@ class MergeCommandTest extends TestCase
 
     public function testRunWriteToFile(): void
     {
-        $definitionWriterMock  = new class implements DefinitionWriterInterface {
+        $definitionWriterMock = new class() implements DefinitionWriterInterface {
             public function write(SpecificationFile $specFile): string
             {
                 return 'dummy-data';
             }
         };
-        $openApiMergeInterface = new class implements OpenApiMergeInterface {
+        $openApiMergeInterface = new class() implements OpenApiMergeInterface {
             public function mergeFiles(File $baseFile, File ...$additionalFiles): SpecificationFile
             {
                 return new SpecificationFile(
                     new File('dummy'),
-                    new OpenApi([])
+                    new OpenApi([]),
                 );
             }
         };
 
         $sut = new MergeCommand(
             $openApiMergeInterface,
-            $definitionWriterMock
+            $definitionWriterMock,
         );
 
         $tmpFile = sys_get_temp_dir() . '/merge-result.json';
         try {
-            $input  = new ArrayInput([
-                'basefile'        => 'basefile.yml',
+            $input = new ArrayInput([
+                'basefile' => 'basefile.yml',
                 'additionalFiles' => ['secondfile.yml'],
-                '-o'              => $tmpFile,
+                '-o' => $tmpFile,
             ]);
             $output = new TrimmedBufferOutput(1024);
             self::assertEquals(0, $sut->run($input, $output));
 
             self::assertSame(
-                sprintf('File successfully written to %s%s', $tmpFile, PHP_EOL),
-                $output->fetch()
+                sprintf('File successfully written to %s%s', $tmpFile, \PHP_EOL),
+                $output->fetch(),
             );
             self::assertStringEqualsFile($tmpFile, 'dummy-data');
         } finally {

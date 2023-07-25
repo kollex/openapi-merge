@@ -6,12 +6,7 @@ namespace Mthole\OpenApiMerge\Tests\Acceptance;
 
 use PHPUnit\Framework\TestCase;
 
-use function shell_exec;
-use function sprintf;
-
-/**
- * @coversNothing
- */
+/** @coversNothing */
 class ApplicationAcceptanceTest extends TestCase
 {
     public function testApplicationRuns(): void
@@ -21,7 +16,7 @@ class ApplicationAcceptanceTest extends TestCase
             __DIR__ . '/../../bin/openapi-merge',
             __DIR__ . '/Fixtures/base.yml',
             __DIR__ . '/Fixtures/routes.yml',
-            __DIR__ . '/Fixtures/errors.yml'
+            __DIR__ . '/Fixtures/errors.yml',
         ));
 
         self::assertSame(
@@ -88,17 +83,17 @@ class ApplicationAcceptanceTest extends TestCase
                                 example: ValidationError
                               title:
                                 type: string
-                                example: 'Your request parameters didn''t validate.'
+                                example: "Your request parameters didn't validate."
                             description: 'Default Problem Response'
             components:
-              schemas: []
+              schemas: {  }
             security: []
             tags:
               -
                 name: Base
 
             EXPECTED_YAML,
-            $output
+            $output,
         );
     }
 }

@@ -14,7 +14,7 @@ final class SpecificationFile
 
     public function __construct(File $filename, OpenApi $openApiSpecificationObject)
     {
-        $this->file    = $filename;
+        $this->file = $filename;
         $this->openApi = $openApiSpecificationObject;
     }
 

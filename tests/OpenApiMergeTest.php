@@ -10,8 +10,6 @@ use Mthole\OpenApiMerge\OpenApiMerge;
 use Mthole\OpenApiMerge\Reader\FileReader;
 use PHPUnit\Framework\TestCase;
 
-use function assert;
-
 /**
  * @uses \Mthole\OpenApiMerge\FileHandling\File
  * @uses \Mthole\OpenApiMerge\FileHandling\SpecificationFile
@@ -24,15 +22,15 @@ class OpenApiMergeTest extends TestCase
     public function testMergePaths(): void
     {
         $sut = new OpenApiMerge(
-            new FileReader()
+            new FileReader(),
         );
 
         $result = $sut->mergeFiles(
             new File(__DIR__ . '/Fixtures/base.yml'),
             new File(__DIR__ . '/Fixtures/routes.yml'),
-            new File(__DIR__ . '/Fixtures/errors.yml')
+            new File(__DIR__ . '/Fixtures/errors.yml'),
         )->getOpenApi();
-        assert($result instanceof OpenApi);
+        \assert($result instanceof OpenApi);
 
         self::assertCount(1, $result->paths->getPaths());
         self::assertNotNull($result->components);
@@ -42,13 +40,13 @@ class OpenApiMergeTest extends TestCase
     public function testMergeFileWithoutComponents(): void
     {
         $sut = new OpenApiMerge(
-            new FileReader()
+            new FileReader(),
         );
 
         $result = $sut->mergeFiles(
-            new File(__DIR__ . '/Fixtures/base-without-components.yml')
+            new File(__DIR__ . '/Fixtures/base-without-components.yml'),
         )->getOpenApi();
-        assert($result instanceof OpenApi);
+        \assert($result instanceof OpenApi);
 
         self::assertNull($result->components);
     }
