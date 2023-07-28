@@ -4,35 +4,45 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Reader;
 
-use cebe\openapi\Reader;
 use cebe\openapi\spec\OpenApi;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Reader\Exception\InvalidFileTypeException;
 
-use function assert;
-
 final class FileReader
 {
-    public function readFile(File $inputFile): SpecificationFile
+    private OpenApiReaderWrapper $openApiReader;
+
+    public function __construct(OpenApiReaderWrapper|null $openApiReader = null)
+    {
+        $this->openApiReader = $openApiReader ?? new OpenApiReaderWrapper();
+    }
+
+    public function readFile(File $inputFile, bool $resolveReferences = true): SpecificationFile
     {
         switch ($inputFile->getFileExtension()) {
             case 'yml':
             case 'yaml':
-                $spec = Reader::readFromYamlFile($inputFile->getAbsolutePath(), OpenApi::class);
+                $spec = $this->openApiReader->readFromYamlFile(
+                    $inputFile->getAbsoluteFile(),
+                    OpenApi::class,
+                    $resolveReferences,
+                );
                 break;
             case 'json':
-                $spec = Reader::readFromJsonFile($inputFile->getAbsolutePath(), OpenApi::class);
+                $spec = $this->openApiReader->readFromJsonFile(
+                    $inputFile->getAbsoluteFile(),
+                    OpenApi::class,
+                    $resolveReferences,
+                );
                 break;
             default:
                 throw InvalidFileTypeException::createFromExtension($inputFile->getFileExtension());
         }
 
-        assert($spec instanceof OpenApi);
-
         return new SpecificationFile(
             $inputFile,
-            $spec
+            $spec,
         );
     }
 }
