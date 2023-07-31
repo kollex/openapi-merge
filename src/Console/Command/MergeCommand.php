@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Mthole\OpenApiMerge\Console\Command;
 
 use Exception;
-use Mthole\OpenApiMerge\Config\Config;
-use Mthole\OpenApiMerge\Config\ConfigAwareInterface;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\Finder;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
@@ -40,11 +38,12 @@ final class MergeCommand extends Command
     public function __construct(
         private OpenApiMergeInterface $merger,
         private DefinitionWriterInterface $definitionWriter,
-        private Finder $fileFinder,,
-        ?DirReaderInterface $dirReader = null
+        private Finder $fileFinder,
+        DirReaderInterface|null $dirReader = null,
     ) {
         parent::__construct(self::COMMAND_NAME);
-        $this->dirReader        = $dirReader ?? new DirReader();
+
+        $this->dirReader = $dirReader ?? new DirReader();
     }
 
     protected function configure(): void
@@ -67,7 +66,7 @@ final class MergeCommand extends Command
                 'dir',
                 'd',
                 InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
-                'A dir to scan for additional files'
+                'A dir to scan for additional files',
             )
             ->addOption(
                 'match',
@@ -84,13 +83,6 @@ final class MergeCommand extends Command
                 InputOption::VALUE_OPTIONAL,
                 'Resolve the "$refs" in the given files',
                 true,
-            )
-            ->addOption(
-                'reset-components',
-                null,
-                InputOption::VALUE_OPTIONAL,
-                'An option to reset component in the schema',
-                true
             )
             ->addOption(
                 'outputfile',
@@ -110,7 +102,8 @@ final class MergeCommand extends Command
             $dirs            = array_unique((array) $input->getOption('dir'));
 
             foreach ($dirs as $dir) {
-                $additionalFiles = array_merge($additionalFiles, $this->dirReader->getDirContents((string) $dir));
+                /** @var string $dir */
+                $additionalFiles = array_merge($additionalFiles, $this->dirReader->getDirContents($dir));
             }
         }
 
@@ -140,14 +133,6 @@ final class MergeCommand extends Command
         }
 
         $shouldResolveReferences = (bool) $input->getOption('resolve-references');
-
-        if ($this->merger instanceof ConfigAwareInterface) {
-            $config = (new Config())
-                ->resetComponents($input->getOption('reset-components') !== 'false')
-                ->skipResolvingReferences(! $shouldResolveReferences);
-
-            $this->merger->setConfig($config);
-        }
 
         $mergedResult = $this->merger->mergeFiles(
             new File($baseFile),

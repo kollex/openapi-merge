@@ -146,6 +146,7 @@ class MergeCommandTest extends TestCase
                 File $baseFile,
                 array $additionalFiles,
                 bool $resolveReference = true,
+                bool $resetComponents = false,
             ): SpecificationFile {
                 return new SpecificationFile(
                     new File('dummy'),
