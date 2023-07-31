@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mthole\OpenApiMerge;
 
 use cebe\openapi\spec\Components;
+use cebe\openapi\spec\PathItem;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Merge\PathMergerInterface;
@@ -32,9 +33,11 @@ class OpenApiMerge implements OpenApiMergeInterface
     {
         $mergedOpenApiDefinition = $this->openApiReader->readFile($baseFile, $resolveReference)->getOpenApi();
 
-        // use "for" instead of "foreach" to iterate over new added files
-        for ($i = 0; $i < count($additionalFiles); $i++) {
-            $additionalFile       = $additionalFiles[$i];
+//        // use "for" instead of "foreach" to iterate over new added files
+//        for ($i = 0; $i < count($additionalFiles); $i++) {
+//            $additionalFile       = $additionalFiles[$i];
+
+        foreach ($additionalFiles as $additionalFile) {
             $additionalDefinition = $this->openApiReader->readFile($additionalFile, $resolveReference)->getOpenApi();
             if (! $resolveReference) {
                 $resolvedReferenceResult = $this->referenceNormalizer->normalizeInlineReferences(
@@ -43,6 +46,30 @@ class OpenApiMerge implements OpenApiMergeInterface
                 );
                 array_push($additionalFiles, ...$resolvedReferenceResult->getFoundReferenceFiles());
                 $additionalDefinition = $resolvedReferenceResult->getNormalizedDefinition();
+            }
+
+            foreach ($additionalDefinition->paths->getPaths() as $name => $path) {
+                if ($mergedOpenApiDefinition->paths === null) {
+                    $mergedOpenApiDefinition->paths = $additionalDefinition->paths;
+
+                    continue;
+                }
+
+                $mergedPath = $mergedOpenApiDefinition->paths->getPath($name);
+
+                if ($mergedPath === null) {
+                    $mergedOpenApiDefinition->paths->addPath($name, $path);
+
+                    continue;
+                }
+
+                $operations = array_merge(
+                    $mergedPath->getOperations(),
+                    $path->getOperations(),
+                );
+
+                $mergedOpenApiDefinition->paths->removePath($name);
+                $mergedOpenApiDefinition->paths->addPath($name, new PathItem($operations));
             }
 
             $mergedOpenApiDefinition->paths = $this->pathMerger->mergePaths(
