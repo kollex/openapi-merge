@@ -119,7 +119,7 @@ final class MergeCommand extends Command
         }
 
         if ($input->hasOption('dir')) {
-            $additionalFiles = (array) ($additionalFiles ?? []);
+            $additionalFiles ??= [];//@phpstan-ignore-line
             /** @var string[] $dirs */
             $dirs = array_unique((array) $input->getOption('dir'));
 
