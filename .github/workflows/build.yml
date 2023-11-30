@@ -15,7 +15,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - php-version: "8.1"
+          - php-version: "8.2"
+            composer-deps: latest
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
@@ -41,10 +42,10 @@ jobs:
           restore-keys: "php-${{ matrix.php-version }}-composer-${{ matrix.composer-deps }}"
 
       - name: "Install dependencies"
-        run: "composer install --no-interaction --no-progress --no-suggest --ignore-platform-reqs"
+        run: "composer install --no-interaction --no-progress --ignore-platform-reqs"
 
       - name: "Update dependencies (lowest)"
-        run: "composer update --no-interaction --no-progress --no-suggest --prefer-lowest --prefer-stable"
+        run: "composer update --no-interaction --no-progress --prefer-lowest --prefer-stable"
         if: ${{ matrix.composer-deps == 'lowest' }}
 
       - name: "Update dependencies (latest)"
@@ -54,8 +55,16 @@ jobs:
       - name: "Show dependencies"
         run: "composer show"
 
-      - name: "Run Test"
-        run: "composer run-script test"
+      - name: "Run code style check"
+        run:  "composer run-script cs-check"
+        if: ${{ matrix.with-cs-check == true }}
+
+      - name: "Run rector"
+        run: "composer run-script rector"
+        if: ${{ matrix.with-cs-check == true }}
+
+      - name: "Run CI"
+        run: "composer run-script phpunit"
 
   tests-with-coverage:
     name: "Tests with coverage and PR Comments"
@@ -63,7 +72,7 @@ jobs:
     strategy:
       matrix:
         php-version:
-          - "8.1"
+          - "8.2"
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
@@ -98,10 +107,10 @@ jobs:
       - name: "Show dependencies"
         run: "composer show"
 
-      - name: "Run Test with coverage"
+      - name: "Run CI with coverage"
         env:
           INFECTION_BADGE_API_KEY: ${{ secrets.INFECTION_BADGE_API_KEY }}
-        run: "composer run-script test-coverage"
+        run: "composer run-script ci-coverage"
 
       - name: Codecov
         uses: codecov/codecov-action@v1.0.15
@@ -109,9 +118,13 @@ jobs:
           directory: ./build/coverage/
 
       - name: Run Infection for added files
+        if: ${{ github.base_ref != '' }}
         run: |
           git fetch --depth=1 origin $GITHUB_BASE_REF
           composer run-script infection -- --git-diff-filter=AM --git-diff-base=origin/$GITHUB_BASE_REF --logger-github --ignore-msi-with-no-mutations --only-covered
+
+      - name: Run PHPStan
+        run: composer run-script phpstan -- --error-format=github
 
   test-runs-on-docker:
     name: "Test if tests pass in the Docker container"

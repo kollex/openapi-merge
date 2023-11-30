@@ -6,16 +6,10 @@ namespace Mthole\OpenApiMerge\FileHandling;
 
 use cebe\openapi\spec\OpenApi;
 
-final class SpecificationFile
+class SpecificationFile
 {
-    private File $file;
-
-    private OpenApi $openApi;
-
-    public function __construct(File $filename, OpenApi $openApiSpecificationObject)
+    public function __construct(private readonly File $file, private readonly OpenApi $openApi)
     {
-        $this->file = $filename;
-        $this->openApi = $openApiSpecificationObject;
     }
 
     public function getFile(): File

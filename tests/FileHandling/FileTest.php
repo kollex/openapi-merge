@@ -9,7 +9,7 @@ use Mthole\OpenApiMerge\FileHandling\File;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @uses \Mthole\OpenApiMerge\FileHandling\Exception\IOException
+ * @uses   \Mthole\OpenApiMerge\FileHandling\Exception\IOException
  *
  * @covers \Mthole\OpenApiMerge\FileHandling\File
  */
@@ -22,8 +22,8 @@ class FileTest extends TestCase
         self::assertSame($expectedExtension, $sut->getFileExtension());
     }
 
-    /** @return \Generator<array<int, string>> */
-    public static function fileExtensionProvider(): \Generator
+    /** @return list<list<string>> */
+    public static function fileExtensionProvider(): iterable
     {
         yield ['base.yml', 'yml'];
         yield ['base.yaml', 'yaml'];
@@ -33,17 +33,17 @@ class FileTest extends TestCase
         yield ['./../file.dat', 'dat'];
     }
 
-    public function testGetAbsolutePathWithRelativeInvalidFile(): void
+    public function testGetAbsoluteFileWithRelativeInvalidFile(): void
     {
         $sut = new File('dummyfile');
 
         $this->expectException(IOException::class);
         $this->expectExceptionMessageMatches('~\w+/dummyfile"~');
 
-        $sut->getAbsolutePath();
+        $sut->getAbsoluteFile();
     }
 
-    public function testGetAbsolutePathWithAbsoluteInvalidFile(): void
+    public function testGetAbsoluteFileWithAbsoluteInvalidFile(): void
     {
         $invalidFilename = __FILE__ . '-nonexisting.dat';
         $sut = new File($invalidFilename);
@@ -51,10 +51,10 @@ class FileTest extends TestCase
         $this->expectException(IOException::class);
         $this->expectExceptionMessageMatches('~"' . preg_quote($invalidFilename, '~') . '"~');
 
-        $sut->getAbsolutePath();
+        $sut->getAbsoluteFile();
     }
 
-    public function testGetAbsolutePath(): void
+    public function testGetAbsoluteFile(): void
     {
         $filename = str_replace(
             getcwd() ?: '',
@@ -70,7 +70,13 @@ class FileTest extends TestCase
         $sut = new File($filename);
         self::assertSame(
             __FILE__,
-            $sut->getAbsolutePath(),
+            $sut->getAbsoluteFile(),
         );
+    }
+
+    public function testGetAbsolutePath(): void
+    {
+        $sut = new File(__FILE__);
+        self::assertSame(__DIR__, $sut->getAbsolutePath());
     }
 }

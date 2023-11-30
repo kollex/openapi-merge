@@ -6,7 +6,7 @@ namespace Mthole\OpenApiMerge\FileHandling;
 
 use Mthole\OpenApiMerge\FileHandling\Exception\IOException;
 
-final class File
+final readonly class File
 {
     public function __construct(private string $filename)
     {
@@ -17,7 +17,7 @@ final class File
         return pathinfo($this->filename, \PATHINFO_EXTENSION);
     }
 
-    public function getAbsolutePath(): string
+    public function getAbsoluteFile(): string
     {
         $fullFilename = realpath($this->filename);
         if (false === $fullFilename) {
@@ -27,9 +27,14 @@ final class File
         return $fullFilename;
     }
 
+    public function getAbsolutePath(): string
+    {
+        return \dirname($this->getAbsoluteFile());
+    }
+
     private function createAbsoluteFilePath(string $filename): string
     {
-        if (0 === strpos($filename, '/')) {
+        if (str_starts_with($filename, '/')) {
             return $filename;
         }
 

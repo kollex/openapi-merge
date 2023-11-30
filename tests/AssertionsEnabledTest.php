@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 /** @coversNothing */
 class AssertionsEnabledTest extends TestCase
 {
-    public function testAssertionsWillThrowAnException(): void
+    public function testAssertionsWillThrowAnException(): never
     {
         self::expectException(\Throwable::class);
         \assert(false); // @phpstan-ignore-line
