@@ -33,11 +33,13 @@ final class MergeCommand extends Command
 {
     public const COMMAND_NAME = 'openapi:merge';
 
+    private DirReaderInterface $dirReader;
+
     public function __construct(
         private OpenApiMergeInterface $merger,
         private DefinitionWriterInterface $definitionWriter,
         private Finder $fileFinder,
-        private DirReaderInterface|null $dirReader = null,
+        DirReaderInterface|null $dirReader = null,
     ) {
         parent::__construct(self::COMMAND_NAME);
 
@@ -121,10 +123,11 @@ final class MergeCommand extends Command
         if ($input->hasOption('dir')) {
             $additionalFiles ??= [];//@phpstan-ignore-line
             /** @var string[] $dirs */
-            $dirs = array_unique((array) $input->getOption('dir'));
+            $dirs = (array) $input->getOption('dir');
+            $dirs = array_unique($dirs);
 
             foreach ($dirs as $dir) {
-                $additionalFiles = array_merge($additionalFiles, $this->dirReader->getDirContents((string) $dir)); //@phpstan-ignore-line
+                $additionalFiles = array_merge($additionalFiles, $this->dirReader->getDirContents($dir));
             }
         }
 
