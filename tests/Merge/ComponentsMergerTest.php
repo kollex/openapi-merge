@@ -33,7 +33,7 @@ class ComponentsMergerTest extends TestCase
     }
 
     /** @return iterable<string, list<Components|null>> */
-    public function mergeDataProvider(): iterable
+    public static function mergeDataProvider(): iterable
     {
         yield 'empty' => [
             new Components([]),

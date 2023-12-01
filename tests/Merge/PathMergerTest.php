@@ -69,7 +69,7 @@ class PathMergerTest extends TestCase
     }
 
     /** @return iterable<string, list<mixed>> */
-    public function pathCombinationDataProvider(): iterable
+    public static function pathCombinationDataProvider(): iterable
     {
         yield 'simple routes' => [
             new Paths(['/route1' => new PathItem([])]),

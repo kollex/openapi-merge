@@ -182,7 +182,7 @@ class MergeCommandTest extends TestCase
     }
 
     /** @return array<string, list<mixed>> */
-    public function resolveReferenceArgumentDataProvider(): iterable
+    public static function resolveReferenceArgumentDataProvider(): iterable
     {
         yield 'default-param' => [null, true];
         yield 'one as string' => ['1', true];
@@ -319,7 +319,7 @@ class MergeCommandTest extends TestCase
     }
 
     /** @return iterable<string, array<string, mixed>> */
-    public function matchArgumentDataProvider(): iterable
+    public static function matchArgumentDataProvider(): iterable
     {
         yield 'given additional files with match should ignore match' => [
             'arguments' => [

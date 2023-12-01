@@ -27,7 +27,7 @@ class FileTest extends TestCase
     }
 
     /** @return list<list<string>> */
-    public function fileExtensionProvider(): iterable
+    public static function fileExtensionProvider(): iterable
     {
         yield ['base.yml', 'yml'];
         yield ['base.yaml', 'yaml'];
