@@ -10,6 +10,7 @@ use Mthole\OpenApiMerge\Console\Command\MergeCommand;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\Finder;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
+use Mthole\OpenApiMerge\Filesystem\DirReaderInterface;
 use Mthole\OpenApiMerge\OpenApiMergeInterface;
 use Mthole\OpenApiMerge\Writer\DefinitionWriterInterface;
 use PHPUnit\Framework\TestCase;
@@ -24,8 +25,8 @@ use function unlink;
 use const PHP_EOL;
 
 /**
- * @uses \Mthole\OpenApiMerge\FileHandling\File
- * @uses \Mthole\OpenApiMerge\FileHandling\SpecificationFile
+ * @uses   \Mthole\OpenApiMerge\FileHandling\File
+ * @uses   \Mthole\OpenApiMerge\FileHandling\SpecificationFile
  *
  * @covers \Mthole\OpenApiMerge\Console\Command\MergeCommand
  */
@@ -47,7 +48,7 @@ class MergeCommandTest extends TestCase
     }
 
     /** @return Generator<list<ArrayInput>> */
-    public function invalidArgumentsDataProvider(): Generator
+    public static function invalidArgumentsDataProvider(): Generator
     {
         yield [
             new ArrayInput([
@@ -163,9 +164,9 @@ class MergeCommandTest extends TestCase
         $tmpFile = sys_get_temp_dir() . '/merge-result.json';
         try {
             $input  = new ArrayInput([
-                'basefile'        => 'basefile.yml',
+                'basefile' => 'basefile.yml',
                 'additionalFiles' => ['secondfile.yml'],
-                '-o'              => $tmpFile,
+                '-o' => $tmpFile,
             ]);
             $output = new TrimmedBufferOutput(1024);
             self::assertEquals(0, $sut->run($input, $output));
@@ -181,7 +182,7 @@ class MergeCommandTest extends TestCase
     }
 
     /** @return array<string, list<mixed>> */
-    public function resolveReferenceArgumentDataProvider(): iterable
+    public static function resolveReferenceArgumentDataProvider(): iterable
     {
         yield 'default-param' => [null, true];
         yield 'one as string' => ['1', true];
@@ -208,10 +209,12 @@ class MergeCommandTest extends TestCase
             new File($basefile),
             [new File($additionalFile)],
             $expectedResolveReferenceValue,
-        )->willReturn(new SpecificationFile(
-            new File($basefile),
-            new OpenApi([]),
-        ));
+        )->willReturn(
+            new SpecificationFile(
+                new File($basefile),
+                new OpenApi([]),
+            ),
+        );
 
         $sut = new MergeCommand(
             $openApiMergeInterface,
@@ -220,8 +223,8 @@ class MergeCommandTest extends TestCase
         );
 
         $arguments = [
-            'basefile'             => $basefile,
-            'additionalFiles'      => [$additionalFile],
+            'basefile' => $basefile,
+            'additionalFiles' => [$additionalFile],
         ];
 
         if ($resolveReferenceValue !== null) {
@@ -229,6 +232,51 @@ class MergeCommandTest extends TestCase
         }
 
         $input  = new ArrayInput($arguments);
+        $output = new TrimmedBufferOutput(1024);
+        self::assertEquals(0, $sut->run($input, $output));
+    }
+
+    public function testDirArgument(): void
+    {
+        $basefile  = 'basefile.yml';
+        $dir       = __DIR__ . '/dir';
+        $arguments = [
+            'additionalFiles' => [],
+            '--dir' => [$dir],
+        ];
+
+        $expectedFiles = [
+            new File(__DIR__ . '/dir/base.yml'),
+            new File(__DIR__ . '/dir/errors.yml'),
+        ];
+
+        $openApiMergeInterface = $this->createMock(OpenApiMergeInterface::class);
+        $openApiMergeInterface->method('mergeFiles')->with(
+            new File($basefile),
+            $expectedFiles,
+        )->willReturn(
+            new SpecificationFile(
+                new File($basefile),
+                new OpenApi([]),
+            ),
+        );
+
+        $sut    = new MergeCommand(
+            $openApiMergeInterface,
+            $this->createStub(DefinitionWriterInterface::class),
+            $this->createStub(Finder::class),
+            new class implements DirReaderInterface {
+                /** @return list<string> */
+                public function getDirContents(string $dir): array
+                {
+                    return [
+                        $dir . '/base.yml',
+                        $dir . '/errors.yml',
+                    ];
+                }
+            },
+        );
+        $input  = new ArrayInput(array_merge(['basefile' => $basefile], $arguments));
         $output = new TrimmedBufferOutput(1024);
         self::assertEquals(0, $sut->run($input, $output));
     }
@@ -247,10 +295,12 @@ class MergeCommandTest extends TestCase
         $openApiMergeInterface->method('mergeFiles')->with(
             new File($basefile),
             $expectedFiles,
-        )->willReturn(new SpecificationFile(
-            new File($basefile),
-            new OpenApi([]),
-        ));
+        )->willReturn(
+            new SpecificationFile(
+                new File($basefile),
+                new OpenApi([]),
+            ),
+        );
 
         $sut    = new MergeCommand(
             $openApiMergeInterface,
@@ -269,7 +319,7 @@ class MergeCommandTest extends TestCase
     }
 
     /** @return iterable<string, array<string, mixed>> */
-    public function matchArgumentDataProvider(): iterable
+    public static function matchArgumentDataProvider(): iterable
     {
         yield 'given additional files with match should ignore match' => [
             'arguments' => [

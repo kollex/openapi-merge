@@ -24,7 +24,7 @@ class RegexFinderTest extends TestCase
     }
 
     /** @return array<string, array<string|int>> */
-    public function findStringDataProvider(): iterable
+    public static function findStringDataProvider(): iterable
     {
         yield 'all a.txt' => ['.*a.txt', 2];
         yield 'all a.txt in B' => ['B/a.txt', 1];

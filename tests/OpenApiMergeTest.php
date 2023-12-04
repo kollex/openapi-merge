@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests;
 
-use cebe\openapi\spec\Components;
+use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\spec\OpenApi;
+use cebe\openapi\spec\Paths;
 use Mthole\OpenApiMerge\FileHandling\File;
+use Mthole\OpenApiMerge\Merge\ComponentsMerger;
 use Mthole\OpenApiMerge\Merge\PathMerger;
 use Mthole\OpenApiMerge\Merge\ReferenceNormalizer;
 use Mthole\OpenApiMerge\Merge\ReferenceResolverResult;
 use Mthole\OpenApiMerge\OpenApiMerge;
+use Mthole\OpenApiMerge\Reader\Exception\InvalidFileTypeException;
 use Mthole\OpenApiMerge\Reader\FileReader;
 use PHPUnit\Framework\TestCase;
 
@@ -24,6 +27,8 @@ use function assert;
  * @uses \Mthole\OpenApiMerge\Merge\PathMerger
  * @uses \Mthole\OpenApiMerge\Reader\OpenApiReaderWrapper
  * @uses \Mthole\OpenApiMerge\Merge\ReferenceResolverResult
+ * @uses \Mthole\OpenApiMerge\Merge\ComponentsMerger
+ * @uses \Mthole\OpenApiMerge\Util\Json
  *
  * @covers \Mthole\OpenApiMerge\OpenApiMerge
  */
@@ -33,7 +38,10 @@ class OpenApiMergeTest extends TestCase
     {
         $sut = new OpenApiMerge(
             new FileReader(),
-            new PathMerger(),
+            [
+                new PathMerger(),
+                new ComponentsMerger(),
+            ],
             new ReferenceNormalizer(),
         );
 
@@ -56,7 +64,10 @@ class OpenApiMergeTest extends TestCase
     {
         $sut = new OpenApiMerge(
             new FileReader(),
-            new PathMerger(),
+            [
+                new PathMerger(),
+                new ComponentsMerger(),
+            ],
             new ReferenceNormalizer(),
         );
 
@@ -69,6 +80,10 @@ class OpenApiMergeTest extends TestCase
         self::assertNull($result->components);
     }
 
+    /**
+     * @throws InvalidFileTypeException
+     * @throws TypeErrorException
+     */
     public function testReferenceNormalizer(): void
     {
         $referenceNormalizer = $this->createMock(ReferenceNormalizer::class);
@@ -91,7 +106,10 @@ class OpenApiMergeTest extends TestCase
 
         $sut = new OpenApiMerge(
             new FileReader(),
-            new PathMerger(),
+            [
+                new PathMerger(),
+                new ComponentsMerger(),
+            ],
             $referenceNormalizer,
         );
 
@@ -104,14 +122,14 @@ class OpenApiMergeTest extends TestCase
         );
 
         $mergedDefinition = $mergedResult->getOpenApi();
-        if ($mergedDefinition->components === null) {
-            $mergedDefinition->components = new Components([]);
+        if ($mergedDefinition->paths === null) {
+            $mergedDefinition->paths = new Paths([]);
         }
 
         self::assertCount(1, $mergedDefinition->paths);
         self::assertSame(
             ['ProblemResponse', 'pingResponse'],
-            array_keys($mergedDefinition->components->schemas),
+            array_keys($mergedDefinition->components->schemas), //@phpstan-ignore-line
         );
     }
 
@@ -122,7 +140,7 @@ class OpenApiMergeTest extends TestCase
 
         $sut = new OpenApiMerge(
             new FileReader(),
-            new PathMerger(),
+            [],
             $referenceNormalizer,
         );
 

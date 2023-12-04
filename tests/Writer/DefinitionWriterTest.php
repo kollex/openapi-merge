@@ -30,7 +30,7 @@ class DefinitionWriterTest extends TestCase
     }
 
     /** @return Generator<SpecificationFile[]> */
-    public function validSpecificationFiles(): Generator
+    public static function validSpecificationFiles(): Generator
     {
         $specObject = new OpenApi([]);
 

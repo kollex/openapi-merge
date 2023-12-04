@@ -15,7 +15,7 @@
   ],
   "require": {
     "php": "~8.0.0 || ~8.1.0 || ~8.2.0",
-    "cebe/php-openapi": "^1.7.0",
+    "devizzent/cebe-php-openapi": "^1.0",
     "symfony/console": "^5.1.9 || ^6.0"
   },
   "require-dev": {
@@ -38,6 +38,7 @@
   },
   "scripts": {
     "ci": [
+      "@cs-check",
       "@phpunit",
       "@phpstan"
     ],

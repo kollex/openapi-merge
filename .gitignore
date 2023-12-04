@@ -1,5 +1,8 @@
 /composer.lock
 /vendor/
-build
-!build/.gitkeep
+/build
+!/build/.gitkeep
+/.php-cs-fixer.cache
+/build/
+/.phpunit.cache/
 .idea

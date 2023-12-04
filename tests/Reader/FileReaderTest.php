@@ -33,7 +33,7 @@ class FileReaderTest extends TestCase
     }
 
     /** @return Generator<string[]> */
-    public function validFilesDataProvider(): Generator
+    public static function validFilesDataProvider(): Generator
     {
         yield [__DIR__ . '/Fixtures/valid-openapi.yml'];
         yield [__DIR__ . '/Fixtures/valid-openapi.yaml'];

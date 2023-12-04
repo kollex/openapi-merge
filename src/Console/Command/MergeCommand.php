@@ -49,7 +49,8 @@ final class MergeCommand extends Command
     protected function configure(): void
     {
         $this->setDescription('Merge multiple OpenAPI definition files into a single file')
-            ->setHelp(<<<'HELP'
+            ->setHelp(
+                <<<'HELP'
                 Usage:
                 basefile.yml additionalFileA.yml additionalFileB.yml [...] > combined.yml
                 basefile.yml additionalFileA.yml --dir /var/www/docs/source1 --dir /var/www/docs/source2 > combined.yml
@@ -59,7 +60,8 @@ final class MergeCommand extends Command
 
                 Outputformat:
                     The output format is determined by the basefile extension.
-                HELP)
+                HELP,
+            )
             ->addArgument('basefile', InputArgument::REQUIRED)
             ->addArgument('additionalFiles', InputArgument::IS_ARRAY | InputArgument::OPTIONAL)
             ->addOption(
@@ -97,16 +99,6 @@ final class MergeCommand extends Command
         $baseFile        = $input->getArgument('basefile');
         $additionalFiles = $input->getArgument('additionalFiles');
 
-        if ($input->hasOption('dir')) {
-            $additionalFiles = (array) ($additionalFiles ?? []);
-            $dirs            = array_unique((array) $input->getOption('dir'));
-
-            foreach ($dirs as $dir) {
-                /** @var string $dir */
-                $additionalFiles = array_merge($additionalFiles, $this->dirReader->getDirContents($dir));
-            }
-        }
-
         if (
             ! is_array($additionalFiles) ||
             array_filter($additionalFiles, static fn (mixed $input): bool => is_string($input)) !== $additionalFiles
@@ -125,6 +117,17 @@ final class MergeCommand extends Command
 
             foreach ($matches as $regex) {
                 $additionalFiles = [...$additionalFiles, ...$this->fileFinder->find('.', $regex)];
+            }
+        }
+
+        if ($input->hasOption('dir')) {
+            $additionalFiles ??= [];//@phpstan-ignore-line
+            /** @var string[] $dirs */
+            $dirs = (array) $input->getOption('dir');
+            $dirs = array_unique($dirs);
+
+            foreach ($dirs as $dir) {
+                $additionalFiles = array_merge($additionalFiles, $this->dirReader->getDirContents($dir));
             }
         }
 

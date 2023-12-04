@@ -9,9 +9,9 @@ use Mthole\OpenApiMerge\FileHandling\File;
 
 final class ReferenceResolverResult
 {
-    /** @param list<File> $foundReferenceFiles */
     public function __construct(
         private OpenApi $openApiSpecification,
+        /** @var list<File> $foundReferenceFiles */
         private array $foundReferenceFiles,
     ) {
     }
