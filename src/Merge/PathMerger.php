@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Merge;
 
+use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Paths;
 use Mthole\OpenApiMerge\Util\Json;
@@ -21,11 +22,15 @@ class PathMerger implements MergerInterface
         'trace',
     ];
 
+    /**
+     * @throws TypeErrorException
+     * @throws \JsonException
+     */
     public function merge(
         OpenApi $existingSpec,
         OpenApi $newSpec,
     ): OpenApi {
-        $existingPaths = $existingSpec->paths?->getPaths() ?? [];
+        $existingPaths = $existingSpec->paths->getPaths();
         $newPaths      = $newSpec->paths;
 
         $pathCopy = new Paths($existingPaths);
