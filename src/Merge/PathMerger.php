@@ -7,6 +7,7 @@ namespace Mthole\OpenApiMerge\Merge;
 use cebe\openapi\exceptions\TypeErrorException;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Paths;
+use JsonException;
 use Mthole\OpenApiMerge\Util\Json;
 
 class PathMerger implements MergerInterface
@@ -24,7 +25,7 @@ class PathMerger implements MergerInterface
 
     /**
      * @throws TypeErrorException
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function merge(
         OpenApi $existingSpec,
