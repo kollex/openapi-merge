@@ -5,23 +5,29 @@ declare(strict_types=1);
 namespace Mthole\OpenApiMerge\Tests\Acceptance;
 
 use Composer\InstalledVersions;
+use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
-/** @coversNothing */
-class ApplicationAcceptanceTest extends TestCase
+#[CoversNothing]
+final class ApplicationAcceptanceTest extends TestCase
 {
     public function testApplicationRuns(): void
     {
-        $output = shell_exec(sprintf(
-            'php %s %s',
-            __DIR__ . '/../../bin/openapi-merge',
-            implode(' ', [
-                __DIR__ . '/Fixtures/base.yml',
-                __DIR__ . '/Fixtures/routes.yml',
-                __DIR__ . '/Fixtures/routes_merge.yml',
-                __DIR__ . '/Fixtures/errors.yml',
-            ]),
-        ));
+        $output = shell_exec(
+            sprintf(
+                'php %s %s',
+                __DIR__ . '/../../bin/openapi-merge',
+                implode(
+                    ' ',
+                    [
+                        __DIR__ . '/Fixtures/base.yml',
+                        __DIR__ . '/Fixtures/routes.yml',
+                        __DIR__ . '/Fixtures/routes_merge.yml',
+                        __DIR__ . '/Fixtures/errors.yml',
+                    ]
+                ),
+            )
+        );
 
         self::assertNotNull($output);
         self::assertNotFalse($output);

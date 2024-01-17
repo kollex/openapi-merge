@@ -10,22 +10,22 @@ use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Reader\Exception\InvalidFileTypeException;
 use Mthole\OpenApiMerge\Reader\FileReader;
 use Mthole\OpenApiMerge\Reader\OpenApiReaderWrapper;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @uses   \Mthole\OpenApiMerge\FileHandling\File
- * @uses   \Mthole\OpenApiMerge\FileHandling\SpecificationFile
- * @uses   \Mthole\OpenApiMerge\Reader\Exception\InvalidFileTypeException
- * @uses   \Mthole\OpenApiMerge\Reader\OpenApiReaderWrapper
- *
- * @covers \Mthole\OpenApiMerge\Reader\FileReader
- */
+#[CoversClass(FileReader::class)]
+#[UsesClass(File::class)]
+#[UsesClass(SpecificationFile::class)]
+#[UsesClass(InvalidFileTypeException::class)]
+#[UsesClass(OpenApiReaderWrapper::class)]
 final class FileReaderTest extends TestCase
 {
     private const DUMMY_JSON_FILE = __DIR__ . '/Fixtures/valid-openapi.json';
     private const DUMMY_YAML_FILE = __DIR__ . '/Fixtures/valid-openapi.yml';
 
-    /** @dataProvider validFilesDataProvider */
+    #[DataProvider('validFilesDataProvider')]
     public function testValidFiles(string $filename): void
     {
         $file = new File($filename);
@@ -52,7 +52,7 @@ final class FileReaderTest extends TestCase
         $sut->readFile($file);
     }
 
-    /** @dataProvider passResolveReferenceJsonProvider */
+    #[DataProvider('passResolveReferenceJsonProvider')]
     public function testPassResolveReferenceForJsonFile(string $providedFileName, bool $providedResolveReferences): void
     {
         $readerMock = $this->createStub(OpenApiReaderWrapper::class);
@@ -67,7 +67,7 @@ final class FileReaderTest extends TestCase
         $this->assertSame($providedFileName, $result->getFile()->getAbsoluteFile());
     }
 
-    /** @dataProvider passResolveReferenceYamlProvider */
+    #[DataProvider('passResolveReferenceYamlProvider')]
     public function testPassResolveReferenceForYamlFile(string $providedFileName, bool $providedResolveReferences): void
     {
         $readerMock = $this->createStub(OpenApiReaderWrapper::class);

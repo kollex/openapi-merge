@@ -12,19 +12,19 @@ use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Filesystem\DirReaderInterface;
 use Mthole\OpenApiMerge\OpenApiMergeInterface;
 use Mthole\OpenApiMerge\Writer\DefinitionWriterInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\TrimmedBufferOutput;
 
-/**
- * @uses   \Mthole\OpenApiMerge\FileHandling\File
- * @uses   \Mthole\OpenApiMerge\FileHandling\SpecificationFile
- *
- * @covers \Mthole\OpenApiMerge\Console\Command\MergeCommand
- */
+#[CoversClass(MergeCommand::class)]
+#[UsesClass(File::class)]
+#[UsesClass(SpecificationFile::class)]
 class MergeCommandTest extends TestCase
 {
-    /** @dataProvider invalidArgumentsDataProvider */
+    #[DataProvider('invalidArgumentsDataProvider')]
     public function testRunWithInvalidArguments(ArrayInput $input): void
     {
         $sut = new MergeCommand(
@@ -43,47 +43,59 @@ class MergeCommandTest extends TestCase
     public static function invalidArgumentsDataProvider(): \Generator
     {
         yield [
-            new ArrayInput([
-                'basefile' => null,
-                'additionalFiles' => ['secondfile.yml'],
-            ]),
+            new ArrayInput(
+                [
+                    'basefile' => null,
+                    'additionalFiles' => ['secondfile.yml'],
+                ]
+            ),
         ];
 
         yield [
-            new ArrayInput([
-                'basefile' => 'basefile.yml',
-                'additionalFiles' => [],
-            ]),
+            new ArrayInput(
+                [
+                    'basefile' => 'basefile.yml',
+                    'additionalFiles' => [],
+                ]
+            ),
         ];
 
         yield [
-            new ArrayInput([
-                'basefile' => 'basefile.yml',
-                'additionalFiles' => '',
-            ]),
+            new ArrayInput(
+                [
+                    'basefile' => 'basefile.yml',
+                    'additionalFiles' => '',
+                ]
+            ),
         ];
 
         yield [
-            new ArrayInput([
-                'basefile' => 'basefile.yml',
-                'additionalFiles' => ['file', 0, null, false],
-            ]),
+            new ArrayInput(
+                [
+                    'basefile' => 'basefile.yml',
+                    'additionalFiles' => ['file', 0, null, false],
+                ]
+            ),
         ];
 
         yield [
-            new ArrayInput([
-                'basefile' => 'basefile.yml',
-                'additionalFiles' => [],
-                '--match' => '',
-            ]),
+            new ArrayInput(
+                [
+                    'basefile' => 'basefile.yml',
+                    'additionalFiles' => [],
+                    '--match' => '',
+                ]
+            ),
         ];
 
         yield [
-            new ArrayInput([
-                'basefile' => 'basefile.yml',
-                'additionalFiles' => [],
-                '--match' => [false],
-            ]),
+            new ArrayInput(
+                [
+                    'basefile' => 'basefile.yml',
+                    'additionalFiles' => [],
+                    '--match' => [false],
+                ]
+            ),
         ];
     }
 
@@ -115,10 +127,12 @@ class MergeCommandTest extends TestCase
             $this->createStub(Finder::class),
         );
 
-        $input = new ArrayInput([
-            'basefile' => 'basefile.yml',
-            'additionalFiles' => ['secondfile.yml'],
-        ]);
+        $input = new ArrayInput(
+            [
+                'basefile' => 'basefile.yml',
+                'additionalFiles' => ['secondfile.yml'],
+            ]
+        );
         $output = new TrimmedBufferOutput(1024);
         self::assertEquals(0, $sut->run($input, $output));
 
@@ -155,11 +169,13 @@ class MergeCommandTest extends TestCase
 
         $tmpFile = sys_get_temp_dir() . '/merge-result.json';
         try {
-            $input = new ArrayInput([
-                'basefile' => 'basefile.yml',
-                'additionalFiles' => ['secondfile.yml'],
-                '-o' => $tmpFile,
-            ]);
+            $input = new ArrayInput(
+                [
+                    'basefile' => 'basefile.yml',
+                    'additionalFiles' => ['secondfile.yml'],
+                    '-o' => $tmpFile,
+                ]
+            );
             $output = new TrimmedBufferOutput(1024);
             self::assertEquals(0, $sut->run($input, $output));
 
@@ -183,7 +199,7 @@ class MergeCommandTest extends TestCase
         yield 'false' => [false, false];
     }
 
-    /** @dataProvider resolveReferenceArgumentDataProvider */
+    #[DataProvider('resolveReferenceArgumentDataProvider')]
     public function testResolveReferencesArgument(
         string|bool|null $resolveReferenceValue,
         bool $expectedResolveReferenceValue,
@@ -276,9 +292,8 @@ class MergeCommandTest extends TestCase
     /**
      * @param array<string, list<string>> $arguments
      * @param list<File>                  $expectedFiles
-     *
-     * @dataProvider matchArgumentDataProvider
      */
+    #[DataProvider('matchArgumentDataProvider')]
     public function testMatchArgument(array $arguments, array $expectedFiles): void
     {
         $basefile = 'basefile.yml';

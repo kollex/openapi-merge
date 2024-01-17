@@ -7,16 +7,17 @@ namespace Merge;
 use cebe\openapi\spec\Components;
 use cebe\openapi\spec\OpenApi;
 use Mthole\OpenApiMerge\Merge\ComponentsMerger;
+use Mthole\OpenApiMerge\Util\Json;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @uses \Mthole\OpenApiMerge\Util\Json
- *
- * @covers \Mthole\OpenApiMerge\Merge\ComponentsMerger
- */
+#[CoversClass(ComponentsMerger::class)]
+#[UsesClass(Json::class)]
 class ComponentsMergerTest extends TestCase
 {
-    /** @dataProvider mergeDataProvider */
+    #[DataProvider('mergeDataProvider')]
     public function testMerge(
         Components|null $existingComponents,
         Components|null $newComponents,
@@ -60,97 +61,125 @@ class ComponentsMergerTest extends TestCase
         ];
 
         yield 'schemas first' => [
-            new Components([
-                'schemas' => [
-                    'ProblemResponse' => [],
-                ],
-            ]),
+            new Components(
+                [
+                    'schemas' => [
+                        'ProblemResponse' => [],
+                    ],
+                ]
+            ),
             null,
-            new Components([
-                'schemas' => [
-                    'ProblemResponse' => [],
-                ],
-            ]),
+            new Components(
+                [
+                    'schemas' => [
+                        'ProblemResponse' => [],
+                    ],
+                ]
+            ),
         ];
 
         yield 'schemas second' => [
             null,
-            new Components([
-                'schemas' => [
-                    'ProblemResponse' => [],
-                ],
-            ]),
-            new Components([
-                'schemas' => [
-                    'ProblemResponse' => [],
-                ],
-            ]),
+            new Components(
+                [
+                    'schemas' => [
+                        'ProblemResponse' => [],
+                    ],
+                ]
+            ),
+            new Components(
+                [
+                    'schemas' => [
+                        'ProblemResponse' => [],
+                    ],
+                ]
+            ),
         ];
 
         yield 'schemas both' => [
-            new Components([
-                'schemas' => [
-                    'ProblemResponse' => [],
-                ],
-            ]),
-            new Components([
-                'schemas' => [
-                    'ProblemResponse2' => [],
-                ],
-            ]),
-            new Components([
-                'schemas' => [
-                    'ProblemResponse' => [],
-                    'ProblemResponse2' => [],
-                ],
-            ]),
+            new Components(
+                [
+                    'schemas' => [
+                        'ProblemResponse' => [],
+                    ],
+                ]
+            ),
+            new Components(
+                [
+                    'schemas' => [
+                        'ProblemResponse2' => [],
+                    ],
+                ]
+            ),
+            new Components(
+                [
+                    'schemas' => [
+                        'ProblemResponse' => [],
+                        'ProblemResponse2' => [],
+                    ],
+                ]
+            ),
         ];
 
         yield 'security first' => [
-            new Components([
-                'securitySchemes' => [
-                    'basic' => [],
-                ],
-            ]),
+            new Components(
+                [
+                    'securitySchemes' => [
+                        'basic' => [],
+                    ],
+                ]
+            ),
             null,
-            new Components([
-                'securitySchemes' => [
-                    'basic' => [],
-                ],
-            ]),
+            new Components(
+                [
+                    'securitySchemes' => [
+                        'basic' => [],
+                    ],
+                ]
+            ),
         ];
 
         yield 'security second' => [
             null,
-            new Components([
-                'securitySchemes' => [
-                    'basic' => [],
-                ],
-            ]),
-            new Components([
-                'securitySchemes' => [
-                    'basic' => [],
-                ],
-            ]),
+            new Components(
+                [
+                    'securitySchemes' => [
+                        'basic' => [],
+                    ],
+                ]
+            ),
+            new Components(
+                [
+                    'securitySchemes' => [
+                        'basic' => [],
+                    ],
+                ]
+            ),
         ];
 
         yield 'security both' => [
-            new Components([
-                'securitySchemes' => [
-                    'basic' => [],
-                ],
-            ]),
-            new Components([
-                'securitySchemes' => [
-                    'oauth' => [],
-                ],
-            ]),
-            new Components([
-                'securitySchemes' => [
-                    'basic' => [],
-                    'oauth' => [],
-                ],
-            ]),
+            new Components(
+                [
+                    'securitySchemes' => [
+                        'basic' => [],
+                    ],
+                ]
+            ),
+            new Components(
+                [
+                    'securitySchemes' => [
+                        'oauth' => [],
+                    ],
+                ]
+            ),
+            new Components(
+                [
+                    'securitySchemes' => [
+                        'basic' => [],
+                        'oauth' => [],
+                    ],
+                ]
+            ),
         ];
     }
 }

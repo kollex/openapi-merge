@@ -6,16 +6,16 @@ namespace Mthole\OpenApiMerge\Tests\FileHandling;
 
 use Mthole\OpenApiMerge\FileHandling\Exception\IOException;
 use Mthole\OpenApiMerge\FileHandling\File;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @uses   \Mthole\OpenApiMerge\FileHandling\Exception\IOException
- *
- * @covers \Mthole\OpenApiMerge\FileHandling\File
- */
+#[CoversClass(File::class)]
+#[UsesClass(IOException::class)]
 class FileTest extends TestCase
 {
-    /** @dataProvider fileExtensionProvider */
+    #[DataProvider('fileExtensionProvider')]
     public function testGetFileExtension(string $filename, string $expectedExtension): void
     {
         $sut = new File($filename);

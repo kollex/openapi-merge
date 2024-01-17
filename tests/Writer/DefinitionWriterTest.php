@@ -9,18 +9,18 @@ use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Writer\DefinitionWriter;
 use Mthole\OpenApiMerge\Writer\Exception\InvalidFileTypeException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @uses   \Mthole\OpenApiMerge\FileHandling\File
- * @uses   \Mthole\OpenApiMerge\FileHandling\SpecificationFile
- * @uses   \Mthole\OpenApiMerge\Writer\Exception\InvalidFileTypeException
- *
- * @covers \Mthole\OpenApiMerge\Writer\DefinitionWriter
- */
+#[CoversClass(DefinitionWriter::class)]
+#[UsesClass(File::class)]
+#[UsesClass(SpecificationFile::class)]
+#[UsesClass(InvalidFileTypeException::class)]
 class DefinitionWriterTest extends TestCase
 {
-    /** @dataProvider validSpecificationFiles */
+    #[DataProvider('validSpecificationFiles')]
     public function testWrite(SpecificationFile $specificationFile): void
     {
         $sut = new DefinitionWriter();

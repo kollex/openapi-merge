@@ -6,19 +6,21 @@ namespace Mthole\OpenApiMerge\Tests\Merge;
 
 use cebe\openapi\Writer;
 use Mthole\OpenApiMerge\FileHandling\File;
+use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Merge\ReferenceNormalizer;
+use Mthole\OpenApiMerge\Merge\ReferenceResolverResult;
 use Mthole\OpenApiMerge\Reader\FileReader;
+use Mthole\OpenApiMerge\Reader\OpenApiReaderWrapper;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @uses   \Mthole\OpenApiMerge\Reader\FileReader
- * @uses   \Mthole\OpenApiMerge\FileHandling\File
- * @uses   \Mthole\OpenApiMerge\FileHandling\SpecificationFile
- * @uses   \Mthole\OpenApiMerge\Reader\OpenApiReaderWrapper
- *
- * @covers \Mthole\OpenApiMerge\Merge\ReferenceNormalizer
- * @covers \Mthole\OpenApiMerge\Merge\ReferenceResolverResult
- */
+#[CoversClass(ReferenceNormalizer::class)]
+#[CoversClass(ReferenceResolverResult::class)]
+#[UsesClass(FileReader::class)]
+#[UsesClass(File::class)]
+#[UsesClass(SpecificationFile::class)]
+#[UsesClass(OpenApiReaderWrapper::class)]
 class ReferenceNormalizerTest extends TestCase
 {
     public function testReadFileWithResolvedReference(): void
