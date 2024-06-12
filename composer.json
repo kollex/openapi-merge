@@ -15,7 +15,7 @@
   ],
   "require": {
     "php": "~8.0.0 || ~8.1.0 || ~8.2.0",
-    "devizzent/cebe-php-openapi": "dev-patch-1 as 1.0.4",
+    "devizzent/cebe-php-openapi": "dev-master as 1.0.4",
     "symfony/console": "^5.1.9 || ^6.0"
   },
   "require-dev": {
@@ -69,11 +69,5 @@
   },
   "bin": [
     "bin/openapi-merge"
-  ],
-  "repositories": [
-    {
-      "type": "github",
-      "url": "git@github.com:JarJak/cebe-php-openapi.git"
-    }
   ]
 }
