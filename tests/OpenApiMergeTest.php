@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests;
 
+use cebe\openapi\spec\Components;
 use cebe\openapi\spec\OpenApi;
-use cebe\openapi\spec\Paths;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\Merge\ComponentsMerger;
 use Mthole\OpenApiMerge\Merge\PathMerger;
@@ -115,14 +115,9 @@ class OpenApiMergeTest extends TestCase
         );
 
         $mergedDefinition = $mergedResult->getOpenApi();
-        // @todo not sure which version is correct
-        if ($mergedDefinition->paths === null) {
-            $mergedDefinition->paths = new Paths([]);
+        if ($mergedDefinition->components === null) {
+            $mergedDefinition->components = new Components([]);
         }
-
-//        if ($mergedDefinition->components === null) {
-//            $mergedDefinition->components = new Components([]);
-//        }
 
         self::assertCount(1, $mergedDefinition->paths);
         self::assertSame(

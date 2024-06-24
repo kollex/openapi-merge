@@ -28,7 +28,7 @@ class PathMerger implements MergerInterface
         $existingPaths = $existingSpec->paths;
         $newPaths      = $newSpec->paths;
 
-        $pathCopy = new Paths($existingPaths?->getPaths() ?? []);
+        $pathCopy = new Paths($existingPaths->getPaths());
         foreach ($newPaths->getPaths() as $pathName => $newPath) {
             $existingPath = $pathCopy->getPath($pathName);
 

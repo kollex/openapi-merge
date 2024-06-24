@@ -109,7 +109,7 @@ class PathMergerTest extends TestCase
                 ]),
             ]),
             ['/route1'],
-            ['/route1' => ['get','post','put']],
+            ['/route1' => ['get','put','post']],
         ];
 
         yield 'explicit null method' => [
