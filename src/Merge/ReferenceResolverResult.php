@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Merge;
 
-use cebe\openapi\spec\OpenApi;
 use Mthole\OpenApiMerge\FileHandling\File;
+use cebe\openapi\spec\OpenApi;
 
 final class ReferenceResolverResult
 {

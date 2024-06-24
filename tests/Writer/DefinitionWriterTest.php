@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests\Writer;
 
-use cebe\openapi\spec\OpenApi;
 use Generator;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Writer\DefinitionWriter;
 use Mthole\OpenApiMerge\Writer\Exception\InvalidFileTypeException;
+use cebe\openapi\spec\OpenApi;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @uses \Mthole\OpenApiMerge\FileHandling\File
- * @uses \Mthole\OpenApiMerge\FileHandling\SpecificationFile
- * @uses \Mthole\OpenApiMerge\Writer\Exception\InvalidFileTypeException
- *
- * @covers \Mthole\OpenApiMerge\Writer\DefinitionWriter
- */
+#[CoversClass(DefinitionWriter::class)]
+#[UsesClass('\Mthole\OpenApiMerge\FileHandling\File')]
+#[UsesClass('\Mthole\OpenApiMerge\FileHandling\SpecificationFile')]
+#[UsesClass('\Mthole\OpenApiMerge\Writer\Exception\InvalidFileTypeException')]
 class DefinitionWriterTest extends TestCase
 {
-    /** @dataProvider validSpecificationFiles */
+    #[DataProvider('validSpecificationFiles')]
     public function testWrite(SpecificationFile $specificationFile): void
     {
         $sut    = new DefinitionWriter();

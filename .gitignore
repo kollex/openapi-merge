@@ -6,3 +6,4 @@
 /build/
 /.phpunit.cache/
 .idea
+.phpunit.cache

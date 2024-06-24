@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Merge;
 
+use Mthole\OpenApiMerge\FileHandling\File;
 use cebe\openapi\spec\MediaType;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\Reference;
-use cebe\openapi\spec\Response;
-use Mthole\OpenApiMerge\FileHandling\File;
+use cebe\openapi\spec\Schema;
 
 use function array_map;
 use function assert;
@@ -28,14 +28,15 @@ class ReferenceNormalizer
             foreach ($path->getOperations() as $operation) {
                 assert($operation->responses !== null);
                 foreach ($operation->responses->getResponses() as $statusCode => $response) {
-                    if ($response instanceof Reference) {
-                        $operation->responses->addResponse(
-                            $statusCode,
-                            $this->normalizeReference($response, $refFileCollection),
-                        );
+                    if ($response === null) {
+                        continue;
                     }
 
-                    if (! ($response instanceof Response)) {
+                    if ($response instanceof Reference) {
+                        $operation->responses->addResponse(
+                            (string) $statusCode,
+                            $this->normalizeReference($response, $refFileCollection),
+                        );
                         continue;
                     }
 
@@ -46,6 +47,24 @@ class ReferenceNormalizer
                                 $responseContent->schema,
                                 $refFileCollection,
                             );
+                        }
+
+                        if ($responseContent->schema instanceof Schema) {
+                            $schemaProperties = $responseContent->schema->properties ?? [];
+                            foreach ($schemaProperties as $propertyName => $property) {
+                                if (! ($property instanceof Reference)) {
+                                    continue;
+                                }
+
+                                $schemaProperties[$propertyName] = $this->normalizeReference(
+                                    $property,
+                                    $refFileCollection,
+                                );
+                            }
+
+                            if ($schemaProperties !== []) {
+                                $responseContent->schema->properties = $schemaProperties;
+                            }
                         }
 
                         $newExamples = [];
