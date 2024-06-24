@@ -119,6 +119,7 @@ class OpenApiMergeTest extends TestCase
         if ($mergedDefinition->paths === null) {
             $mergedDefinition->paths = new Paths([]);
         }
+
 //        if ($mergedDefinition->components === null) {
 //            $mergedDefinition->components = new Components([]);
 //        }

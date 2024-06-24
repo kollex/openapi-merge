@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests\Merge;
 
+use cebe\openapi\Writer;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\Merge\ReferenceNormalizer;
 use Mthole\OpenApiMerge\Merge\ReferenceResolverResult;
 use Mthole\OpenApiMerge\Reader\FileReader;
-use cebe\openapi\Writer;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;

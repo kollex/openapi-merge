@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests\Reader;
 
-use Mthole\OpenApiMerge\Reader\OpenApiReaderWrapper;
 use cebe\openapi\spec\OpenApi;
 use cebe\openapi\SpecObjectInterface;
+use Mthole\OpenApiMerge\Reader\OpenApiReaderWrapper;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
