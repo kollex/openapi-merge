@@ -13,6 +13,9 @@ use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Filesystem\DirReaderInterface;
 use Mthole\OpenApiMerge\OpenApiMergeInterface;
 use Mthole\OpenApiMerge\Writer\DefinitionWriterInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\TrimmedBufferOutput;
@@ -24,15 +27,12 @@ use function unlink;
 
 use const PHP_EOL;
 
-/**
- * @uses   \Mthole\OpenApiMerge\FileHandling\File
- * @uses   \Mthole\OpenApiMerge\FileHandling\SpecificationFile
- *
- * @covers \Mthole\OpenApiMerge\Console\Command\MergeCommand
- */
+#[CoversClass(MergeCommand::class)]
+#[UsesClass('\Mthole\OpenApiMerge\FileHandling\File')]
+#[UsesClass('\Mthole\OpenApiMerge\FileHandling\SpecificationFile')]
 class MergeCommandTest extends TestCase
 {
-    /** @dataProvider invalidArgumentsDataProvider */
+    #[DataProvider('invalidArgumentsDataProvider')]
     public function testRunWithInvalidArguments(ArrayInput $input): void
     {
         $sut = new MergeCommand(
@@ -102,7 +102,7 @@ class MergeCommandTest extends TestCase
 
         $mergeResultStub = new SpecificationFile(
             new File('dummy'),
-            $this->createStub(OpenApi::class),
+            new OpenApi([]),
         );
 
         $mergeMock = $this->createMock(OpenApiMergeInterface::class);
@@ -164,9 +164,9 @@ class MergeCommandTest extends TestCase
         $tmpFile = sys_get_temp_dir() . '/merge-result.json';
         try {
             $input  = new ArrayInput([
-                'basefile' => 'basefile.yml',
+                'basefile'        => 'basefile.yml',
                 'additionalFiles' => ['secondfile.yml'],
-                '-o' => $tmpFile,
+                '-o'              => $tmpFile,
             ]);
             $output = new TrimmedBufferOutput(1024);
             self::assertEquals(0, $sut->run($input, $output));
@@ -191,7 +191,7 @@ class MergeCommandTest extends TestCase
         yield 'false' => [false, false];
     }
 
-    /** @dataProvider resolveReferenceArgumentDataProvider */
+    #[DataProvider('resolveReferenceArgumentDataProvider')]
     public function testResolveReferencesArgument(
         string|bool|null $resolveReferenceValue,
         bool $expectedResolveReferenceValue,
@@ -209,12 +209,10 @@ class MergeCommandTest extends TestCase
             new File($basefile),
             [new File($additionalFile)],
             $expectedResolveReferenceValue,
-        )->willReturn(
-            new SpecificationFile(
-                new File($basefile),
-                new OpenApi([]),
-            ),
-        );
+        )->willReturn(new SpecificationFile(
+            new File($basefile),
+            new OpenApi([]),
+        ));
 
         $sut = new MergeCommand(
             $openApiMergeInterface,
@@ -223,8 +221,8 @@ class MergeCommandTest extends TestCase
         );
 
         $arguments = [
-            'basefile' => $basefile,
-            'additionalFiles' => [$additionalFile],
+            'basefile'             => $basefile,
+            'additionalFiles'      => [$additionalFile],
         ];
 
         if ($resolveReferenceValue !== null) {
@@ -284,9 +282,8 @@ class MergeCommandTest extends TestCase
     /**
      * @param array<string, list<string>> $arguments
      * @param list<File>                  $expectedFiles
-     *
-     * @dataProvider matchArgumentDataProvider
      */
+    #[DataProvider('matchArgumentDataProvider')]
     public function testMatchArgument(array $arguments, array $expectedFiles): void
     {
         $basefile = 'basefile.yml';
@@ -295,12 +292,10 @@ class MergeCommandTest extends TestCase
         $openApiMergeInterface->method('mergeFiles')->with(
             new File($basefile),
             $expectedFiles,
-        )->willReturn(
-            new SpecificationFile(
-                new File($basefile),
-                new OpenApi([]),
-            ),
-        );
+        )->willReturn(new SpecificationFile(
+            new File($basefile),
+            new OpenApi([]),
+        ));
 
         $sut    = new MergeCommand(
             $openApiMergeInterface,

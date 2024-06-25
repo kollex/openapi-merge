@@ -7,16 +7,16 @@ namespace Merge;
 use cebe\openapi\spec\Components;
 use cebe\openapi\spec\OpenApi;
 use Mthole\OpenApiMerge\Merge\ComponentsMerger;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @uses \Mthole\OpenApiMerge\Util\Json
- *
- * @covers \Mthole\OpenApiMerge\Merge\ComponentsMerger
- */
+#[CoversClass(ComponentsMerger::class)]
+#[UsesClass('\Mthole\OpenApiMerge\Util\Json')]
 class ComponentsMergerTest extends TestCase
 {
-    /** @dataProvider mergeDataProvider */
+    #[DataProvider('mergeDataProvider')]
     public function testMerge(
         Components|null $existingComponents,
         Components|null $newComponents,
@@ -149,6 +149,100 @@ class ComponentsMergerTest extends TestCase
                 'securitySchemes' => [
                     'basic' => [],
                     'oauth' => [],
+                ],
+            ]),
+        ];
+
+        yield 'request bodies first' => [
+            new Components([
+                'requestBodies' => [
+                    'RequestBody' => [],
+                ],
+            ]),
+            null,
+            new Components([
+                'requestBodies' => [
+                    'RequestBody' => [],
+                ],
+            ]),
+        ];
+
+        yield 'request bodies second' => [
+            null,
+            new Components([
+                'requestBodies' => [
+                    'RequestBody' => [],
+                ],
+            ]),
+            new Components([
+                'requestBodies' => [
+                    'RequestBody' => [],
+                ],
+            ]),
+        ];
+
+        yield 'request bodies both' => [
+            new Components([
+                'requestBodies' => [
+                    'RequestBody' => [],
+                ],
+            ]),
+            new Components([
+                'requestBodies' => [
+                    'AnotherRequestBody' => [],
+                ],
+            ]),
+            new Components([
+                'requestBodies' => [
+                    'RequestBody' => [],
+                    'AnotherRequestBody' => [],
+                ],
+            ]),
+        ];
+
+        yield 'responses first' => [
+            new Components([
+                'responses' => [
+                    'ProblemResponse' => [],
+                ],
+            ]),
+            null,
+            new Components([
+                'responses' => [
+                    'ProblemResponse' => [],
+                ],
+            ]),
+        ];
+
+        yield 'responses second' => [
+            null,
+            new Components([
+                'responses' => [
+                    'ProblemResponse' => [],
+                ],
+            ]),
+            new Components([
+                'responses' => [
+                    'ProblemResponse' => [],
+                ],
+            ]),
+        ];
+
+        yield 'responses both' => [
+            new Components([
+                'responses' => [
+                    'ProblemResponse' => [],
+                ],
+            ]),
+            new Components([
+                'responses' => [
+                    'AnotherProblemResponse' => [],
+                ],
+            ]),
+            new Components([
+                'responses' => [
+                    'ProblemResponse' => [],
+                    'AnotherProblemResponse' => [],
                 ],
             ]),
         ];

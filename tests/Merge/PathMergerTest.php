@@ -8,15 +8,15 @@ use cebe\openapi\spec\OpenApi;
 use cebe\openapi\spec\PathItem;
 use cebe\openapi\spec\Paths;
 use Mthole\OpenApiMerge\Merge\PathMerger;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 use function array_keys;
 
-/**
- * @uses \Mthole\OpenApiMerge\Util\Json
- *
- * @covers \Mthole\OpenApiMerge\Merge\PathMerger
- */
+#[CoversClass(PathMerger::class)]
+#[UsesClass('\Mthole\OpenApiMerge\Util\Json')]
 class PathMergerTest extends TestCase
 {
     public function testMergeDidNotChangeOriginals(): void
@@ -41,9 +41,8 @@ class PathMergerTest extends TestCase
      * @param Paths<PathItem>              $newPaths
      * @param array<string>                $expectedRoutes
      * @param array<string, array<string>> $expectedMethods
-     *
-     * @dataProvider pathCombinationDataProvider
      */
+    #[DataProvider('pathCombinationDataProvider')]
     public function testMergePaths(
         Paths $existingPaths,
         Paths $newPaths,
