@@ -25,7 +25,7 @@ class PathMerger implements MergerInterface
         OpenApi $existingSpec,
         OpenApi $newSpec,
     ): OpenApi {
-        $existingPaths = $existingSpec->paths?->getPaths() ?? [];
+        $existingPaths = $existingSpec->paths?->getPaths() ?? []; // @phpstan-ignore-line
         $newPaths      = $newSpec->paths;
 
         $pathCopy = new Paths($existingPaths);
