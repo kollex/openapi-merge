@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Merge;
 
+use cebe\openapi\spec\OpenApi;
 use Mthole\OpenApiMerge\FileHandling\File;
-use openapiphp\openapi\spec\OpenApi;
 
 final class ReferenceResolverResult
 {
-    /** @param list<File> $foundReferenceFiles */
     public function __construct(
         private OpenApi $openApiSpecification,
+        /** @var list<File> $foundReferenceFiles */
         private array $foundReferenceFiles,
     ) {
     }

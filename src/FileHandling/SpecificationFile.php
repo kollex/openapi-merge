@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\FileHandling;
 
-use openapiphp\openapi\spec\OpenApi;
+use cebe\openapi\spec\OpenApi;
 
-final class SpecificationFile
+class SpecificationFile
 {
     private File $file;
 

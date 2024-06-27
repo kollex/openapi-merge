@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Merge;
 
+use cebe\openapi\spec\MediaType;
+use cebe\openapi\spec\OpenApi;
+use cebe\openapi\spec\Reference;
+use cebe\openapi\spec\Schema;
 use Mthole\OpenApiMerge\FileHandling\File;
-use openapiphp\openapi\spec\MediaType;
-use openapiphp\openapi\spec\OpenApi;
-use openapiphp\openapi\spec\Reference;
-use openapiphp\openapi\spec\Schema;
 
 use function array_map;
 use function assert;

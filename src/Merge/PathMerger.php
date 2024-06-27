@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Merge;
 
+use cebe\openapi\spec\OpenApi;
+use cebe\openapi\spec\Paths;
 use Mthole\OpenApiMerge\Util\Json;
-use openapiphp\openapi\spec\OpenApi;
-use openapiphp\openapi\spec\Paths;
 
 class PathMerger implements MergerInterface
 {
@@ -25,10 +25,10 @@ class PathMerger implements MergerInterface
         OpenApi $existingSpec,
         OpenApi $newSpec,
     ): OpenApi {
-        $existingPaths = $existingSpec->paths;
+        $existingPaths = $existingSpec->paths?->getPaths() ?? []; // @phpstan-ignore-line
         $newPaths      = $newSpec->paths;
 
-        $pathCopy = new Paths($existingPaths->getPaths());
+        $pathCopy = new Paths($existingPaths);
         foreach ($newPaths->getPaths() as $pathName => $newPath) {
             $existingPath = $pathCopy->getPath($pathName);
 

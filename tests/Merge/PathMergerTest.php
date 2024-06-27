@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests\Merge;
 
+use cebe\openapi\spec\OpenApi;
+use cebe\openapi\spec\PathItem;
+use cebe\openapi\spec\Paths;
 use Mthole\OpenApiMerge\Merge\PathMerger;
-use openapiphp\openapi\spec\OpenApi;
-use openapiphp\openapi\spec\PathItem;
-use openapiphp\openapi\spec\Paths;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -109,7 +109,7 @@ class PathMergerTest extends TestCase
                 ]),
             ]),
             ['/route1'],
-            ['/route1' => ['get','post','put']],
+            ['/route1' => ['get','put','post']],
         ];
 
         yield 'explicit null method' => [

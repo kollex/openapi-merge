@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Merge;
 
-use openapiphp\openapi\spec\OpenApi;
+use cebe\openapi\spec\OpenApi;
 
 interface MergerInterface
 {

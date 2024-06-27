@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests\Reader;
 
+use cebe\openapi\spec\OpenApi;
 use Generator;
 use InvalidArgumentException;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\Reader\Exception\InvalidFileTypeException;
 use Mthole\OpenApiMerge\Reader\FileReader;
 use Mthole\OpenApiMerge\Reader\OpenApiReaderWrapper;
-use openapiphp\openapi\spec\OpenApi;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;

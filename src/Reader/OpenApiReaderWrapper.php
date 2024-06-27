@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Reader;
 
-use openapiphp\openapi\Reader;
-use openapiphp\openapi\SpecObjectInterface;
+use cebe\openapi\Reader;
+use cebe\openapi\SpecObjectInterface;
 
 class OpenApiReaderWrapper
 {
