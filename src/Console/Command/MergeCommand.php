@@ -8,6 +8,8 @@ use Exception;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\Finder;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
+use Mthole\OpenApiMerge\Filesystem\DirReader;
+use Mthole\OpenApiMerge\Filesystem\DirReaderInterface;
 use Mthole\OpenApiMerge\OpenApiMergeInterface;
 use Mthole\OpenApiMerge\Writer\DefinitionWriterInterface;
 use Symfony\Component\Console\Command\Command;
@@ -18,6 +20,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 use function array_filter;
 use function array_map;
+use function array_merge;
+use function array_unique;
 use function count;
 use function file_put_contents;
 use function is_array;
@@ -29,12 +33,17 @@ final class MergeCommand extends Command
 {
     public const COMMAND_NAME = 'openapi:merge';
 
+    private DirReaderInterface $dirReader;
+
     public function __construct(
         private OpenApiMergeInterface $merger,
         private DefinitionWriterInterface $definitionWriter,
         private Finder $fileFinder,
+        DirReaderInterface|null $dirReader = null,
     ) {
         parent::__construct(self::COMMAND_NAME);
+
+        $this->dirReader = $dirReader ?? new DirReader();
     }
 
     protected function configure(): void
@@ -42,7 +51,8 @@ final class MergeCommand extends Command
         $this->setDescription('Merge multiple OpenAPI definition files into a single file')
             ->setHelp(<<<'HELP'
                 Usage:
-                    basefile.yml additionalFileA.yml additionalFileB.yml [...] > combined.yml
+                basefile.yml additionalFileA.yml additionalFileB.yml [...] > combined.yml
+                basefile.yml additionalFileA.yml --dir /var/www/docs/source1 --dir /var/www/docs/source2 > combined.yml
 
                 Allowed extensions:
                     Only .yml, .yaml and .json files are supported
@@ -52,6 +62,12 @@ final class MergeCommand extends Command
                 HELP)
             ->addArgument('basefile', InputArgument::REQUIRED)
             ->addArgument('additionalFiles', InputArgument::IS_ARRAY | InputArgument::OPTIONAL)
+            ->addOption(
+                'dir',
+                'd',
+                InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL,
+                'A dir to scan for additional files',
+            )
             ->addOption(
                 'match',
                 null,
@@ -80,6 +96,16 @@ final class MergeCommand extends Command
     {
         $baseFile        = $input->getArgument('basefile');
         $additionalFiles = $input->getArgument('additionalFiles');
+
+        if ($input->getOption('dir')) {
+            $additionalFiles = (array) ($additionalFiles ?? []);
+            $dirs            = array_unique((array) $input->getOption('dir'));
+
+            foreach ($dirs as $dir) {
+                /** @var string $dir */
+                $additionalFiles = array_merge($additionalFiles, $this->dirReader->getDirContents($dir));
+            }
+        }
 
         if (
             ! is_array($additionalFiles) ||
