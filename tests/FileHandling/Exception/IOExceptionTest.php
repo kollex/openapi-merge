@@ -14,7 +14,7 @@ class IOExceptionTest extends TestCase
     public function testCreateException(): void
     {
         $exception = IOException::createWithNonExistingFile('dummyfile');
-        self::assertSame('dummyfile', $exception->getFilename());
-        self::assertSame('Given file "dummyfile" was not found', $exception->getMessage());
+        $this->assertSame('dummyfile', $exception->getFilename());
+        $this->assertSame('Given file "dummyfile" was not found', $exception->getMessage());
     }
 }

@@ -1,0 +1,10 @@
+parameters:
+    level: 6
+    paths:
+        - src
+    tmpDir: .build
+    checkMissingIterableValueType: false
+    ignoreErrors:
+        -
+            messages:
+                - '#Call to an [a-zA-Z0-9\\\$\::withConsecutive()].#'

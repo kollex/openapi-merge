@@ -15,15 +15,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - php-version: "8.1"
-            composer-deps: lowest
-          - php-version: "8.1"
-            composer-deps: latest
-            with-cs-check: true
           - php-version: "8.2"
-            composer-deps: latest
+            composer-deps: lowest
+            with-cs-check: true
           - php-version: "8.3"
             composer-deps: latest
+            with-cs-check: true
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
@@ -63,7 +60,11 @@ jobs:
         run: "composer show"
 
       - name: "Run code style check"
-        run:  "composer run-script cs-check"
+        run:  "composer run-script phpcs"
+        if: ${{ matrix.with-cs-check == true }}
+
+      - name: "Run rector"
+        run: "composer run-script rector"
         if: ${{ matrix.with-cs-check == true }}
 
       - name: "Run CI"

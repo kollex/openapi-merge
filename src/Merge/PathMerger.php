@@ -8,6 +8,9 @@ use Mthole\OpenApiMerge\Util\Json;
 use openapiphp\openapi\spec\OpenApi;
 use openapiphp\openapi\spec\Paths;
 
+/**
+ * @see \Mthole\OpenApiMerge\Tests\Merge\PathMergerTest
+ */
 class PathMerger implements MergerInterface
 {
     private const MERGE_METHODS = [
@@ -26,23 +29,27 @@ class PathMerger implements MergerInterface
         OpenApi $newSpec,
     ): OpenApi {
         $existingPaths = $existingSpec->paths;
-        $newPaths      = $newSpec->paths;
+        $newPaths = $newSpec->paths;
+        /**
+         * @phpstan-ignore-next-line
+         */
+        $pathCopy = ($existingPaths instanceof Paths) ? new Paths($existingPaths->getPaths()) : new Paths($existingPaths ?? []);
 
-        $pathCopy = new Paths($existingPaths->getPaths());
         foreach ($newPaths->getPaths() as $pathName => $newPath) {
             $existingPath = $pathCopy->getPath($pathName);
 
-            if ($existingPath === null) {
+            if (null === $existingPath) {
                 $pathCopy->addPath($pathName, $newPath);
+
                 continue;
             }
 
             foreach (self::MERGE_METHODS as $method) {
-                if ($existingPath->{$method} !== null) {
+                if (null !== $existingPath->{$method}) {
                     continue;
                 }
 
-                if ($newPath->{$method} === null) {
+                if (null === $newPath->{$method}) {
                     continue;
                 }
 

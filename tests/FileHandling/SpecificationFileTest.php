@@ -12,16 +12,16 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(SpecificationFile::class)]
-#[UsesClass('\Mthole\OpenApiMerge\FileHandling\File')]
+#[UsesClass(File::class)]
 class SpecificationFileTest extends TestCase
 {
     public function testGetter(): void
     {
         $stubSpecObject = new OpenApi([]);
-        $fileStub       = new File('example.file');
-        $sut            = new SpecificationFile($fileStub, $stubSpecObject);
+        $fileStub = new File('example.file');
+        $sut = new SpecificationFile($fileStub, $stubSpecObject);
 
-        self::assertSame($fileStub, $sut->getFile());
-        self::assertSame($stubSpecObject, $sut->getOpenApi());
+        $this->assertSame($fileStub, $sut->getFile());
+        $this->assertSame($stubSpecObject, $sut->getOpenApi());
     }
 }

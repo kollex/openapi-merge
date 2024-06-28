@@ -7,11 +7,11 @@ namespace Mthole\OpenApiMerge\Merge;
 use Mthole\OpenApiMerge\FileHandling\File;
 use openapiphp\openapi\spec\OpenApi;
 
-final class ReferenceResolverResult
+final readonly class ReferenceResolverResult
 {
-    /** @param list<File> $foundReferenceFiles */
     public function __construct(
         private OpenApi $openApiSpecification,
+        /** @var list<File> $foundReferenceFiles */
         private array $foundReferenceFiles,
     ) {
     }

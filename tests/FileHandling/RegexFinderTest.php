@@ -9,19 +9,17 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-use function array_keys;
-
 #[CoversClass(RegexFinder::class)]
 class RegexFinderTest extends TestCase
 {
     #[DataProvider('findStringDataProvider')]
     public function testFind(string $search, int $expectedFilesCount): void
     {
-        $sut   = new RegexFinder();
+        $sut = new RegexFinder();
         $files = $sut->find(__DIR__ . '/Fixtures', $search);
-        self::assertCount($expectedFilesCount, $files);
+        $this->assertCount($expectedFilesCount, $files);
         foreach (array_keys($files) as $key) {
-            self::assertIsNumeric($key);
+            $this->assertIsNumeric($key);
         }
     }
 

@@ -14,7 +14,7 @@ class InvalidFileTypeExceptionTest extends TestCase
     public function testCreateException(): void
     {
         $exception = InvalidFileTypeException::createFromExtension('exe');
-        self::assertSame('exe', $exception->getFileExtension());
-        self::assertSame('Given file has an unsupported file extension "exe"', $exception->getMessage());
+        $this->assertSame('exe', $exception->getFileExtension());
+        $this->assertSame('Given file has an unsupported file extension "exe"', $exception->getMessage());
     }
 }

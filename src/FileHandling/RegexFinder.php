@@ -4,38 +4,25 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\FileHandling;
 
-use RecursiveCallbackFilterIterator;
-use RecursiveDirectoryIterator;
-use RecursiveIterator;
-use RecursiveIteratorIterator;
-
-use function array_filter;
-use function array_values;
-use function assert;
-use function is_string;
-use function iterator_to_array;
-use function preg_match;
-use function sprintf;
-use function str_replace;
-use function strlen;
-use function substr;
-
+/**
+ * @see \Mthole\OpenApiMerge\Tests\FileHandling\RegexFinderTest
+ */
 class RegexFinder implements Finder
 {
     /** @return list<string> */
     public function find(string $baseDirectory, string $searchString): array
     {
-        $directoryIterator = new RecursiveDirectoryIterator(
+        $directoryIterator = new \RecursiveDirectoryIterator(
             $baseDirectory,
-            RecursiveDirectoryIterator::CURRENT_AS_PATHNAME | RecursiveDirectoryIterator::SKIP_DOTS,
+            \RecursiveDirectoryIterator::CURRENT_AS_PATHNAME | \RecursiveDirectoryIterator::SKIP_DOTS | \FilesystemIterator::SKIP_DOTS,
         );
 
-        $regexIterator = new RecursiveCallbackFilterIterator(
+        $regexIterator = new \RecursiveCallbackFilterIterator(
             $directoryIterator,
             static function (
                 string $current,
                 string $key,
-                RecursiveIterator $iterator,
+                \RecursiveIterator $iterator,
             ) use (
                 $baseDirectory,
                 $searchString,
@@ -44,21 +31,21 @@ class RegexFinder implements Finder
                     return true;
                 }
 
-                $relativeFileName = '.' . substr($current, strlen($baseDirectory));
+                $relativeFileName = '.' . substr($current, \strlen($baseDirectory));
 
-                return preg_match(
+                return 1 === preg_match(
                     sprintf('~%s~i', str_replace('~', '\~', $searchString)),
                     $relativeFileName,
-                ) === 1;
+                );
             },
         );
 
-        $recursiveIterator = new RecursiveIteratorIterator($regexIterator);
+        $recursiveIterator = new \RecursiveIteratorIterator($regexIterator);
 
         $matches = array_values(iterator_to_array($recursiveIterator));
 
-        assert(
-            array_filter($matches, static fn (mixed $input): bool => is_string($input)) === $matches,
+        \assert(
+            array_filter($matches, static fn (mixed $input): bool => \is_string($input)) === $matches,
         );
 
         return $matches;

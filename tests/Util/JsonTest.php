@@ -12,11 +12,13 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(Json::class)]
 class JsonTest extends TestCase
 {
-    /** @param array<mixed> $expected */
+    /**
+     * @param array<mixed> $expected
+     */
     #[DataProvider('toArrayDataprovider')]
     public function testToArray(mixed $data, array $expected): void
     {
-        self::assertSame($expected, Json::toArray($data));
+        $this->assertSame($expected, Json::toArray($data));
     }
 
     /** @return iterable<string, list<mixed|array<mixed>>> */
@@ -43,7 +45,7 @@ class JsonTest extends TestCase
         ];
 
         yield 'object' => [
-            (object) ['foo' => 'bar'],
+            (object)['foo' => 'bar'],
             ['foo' => 'bar'],
         ];
     }

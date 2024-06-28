@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\FileHandling\Exception;
 
-use Exception;
-
-use function sprintf;
-
-class IOException extends Exception
+/**
+ * @see \Mthole\OpenApiMerge\Tests\FileHandling\Exception\IOExceptionTest
+ */
+class IOException extends \Exception
 {
     private string $filename;
 
     public static function createWithNonExistingFile(string $filename): self
     {
-        $exception           = new IOException(
+        $exception = new IOException(
             sprintf('Given file "%s" was not found', $filename),
         );
         $exception->filename = $filename;

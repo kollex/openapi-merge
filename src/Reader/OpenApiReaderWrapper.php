@@ -7,6 +7,9 @@ namespace Mthole\OpenApiMerge\Reader;
 use openapiphp\openapi\Reader;
 use openapiphp\openapi\SpecObjectInterface;
 
+/**
+ * @see \Mthole\OpenApiMerge\Tests\Reader\OpenApiReaderWrapperTest
+ */
 class OpenApiReaderWrapper
 {
     /**

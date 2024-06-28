@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests\Console\Command;
 
-use Generator;
 use Mthole\OpenApiMerge\Console\Command\MergeCommand;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\Finder;
@@ -19,16 +18,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\TrimmedBufferOutput;
 
-use function array_merge;
-use function sprintf;
-use function sys_get_temp_dir;
-use function unlink;
-
-use const PHP_EOL;
-
 #[CoversClass(MergeCommand::class)]
-#[UsesClass('\Mthole\OpenApiMerge\FileHandling\File')]
-#[UsesClass('\Mthole\OpenApiMerge\FileHandling\SpecificationFile')]
+#[UsesClass(File::class)]
+#[UsesClass(SpecificationFile::class)]
 class MergeCommandTest extends TestCase
 {
     #[DataProvider('invalidArgumentsDataProvider')]
@@ -46,57 +38,69 @@ class MergeCommandTest extends TestCase
         $sut->run($input, $output);
     }
 
-    /** @return Generator<list<ArrayInput>> */
-    public static function invalidArgumentsDataProvider(): Generator
+    /** @return \Generator<list<ArrayInput>> */
+    public static function invalidArgumentsDataProvider(): \Generator
     {
         yield [
-            new ArrayInput([
-                'basefile' => null,
-                'additionalFiles' => ['secondfile.yml'],
-            ]),
+            new ArrayInput(
+                [
+                    'basefile' => null,
+                    'additionalFiles' => ['secondfile.yml'],
+                ]
+            ),
         ];
 
         yield [
-            new ArrayInput([
-                'basefile' => 'basefile.yml',
-                'additionalFiles' => [],
-            ]),
+            new ArrayInput(
+                [
+                    'basefile' => 'basefile.yml',
+                    'additionalFiles' => [],
+                ]
+            ),
         ];
 
         yield [
-            new ArrayInput([
-                'basefile' => 'basefile.yml',
-                'additionalFiles' => '',
-            ]),
+            new ArrayInput(
+                [
+                    'basefile' => 'basefile.yml',
+                    'additionalFiles' => '',
+                ]
+            ),
         ];
 
         yield [
-            new ArrayInput([
-                'basefile' => 'basefile.yml',
-                'additionalFiles' => ['file', 0, null, false],
-            ]),
+            new ArrayInput(
+                [
+                    'basefile' => 'basefile.yml',
+                    'additionalFiles' => ['file', 0, null, false],
+                ]
+            ),
         ];
 
         yield [
-            new ArrayInput([
-                'basefile' => 'basefile.yml',
-                'additionalFiles' => [],
-                '--match' => '',
-            ]),
+            new ArrayInput(
+                [
+                    'basefile' => 'basefile.yml',
+                    'additionalFiles' => [],
+                    '--match' => '',
+                ]
+            ),
         ];
 
         yield [
-            new ArrayInput([
-                'basefile' => 'basefile.yml',
-                'additionalFiles' => [],
-                '--match' => [false],
-            ]),
+            new ArrayInput(
+                [
+                    'basefile' => 'basefile.yml',
+                    'additionalFiles' => [],
+                    '--match' => [false],
+                ]
+            ),
         ];
     }
 
     public function testRun(): void
     {
-        $baseFile   = new File('basefile.yml');
+        $baseFile = new File('basefile.yml');
         $secondFile = new File('secondfile.yml');
 
         $mergeResultStub = new SpecificationFile(
@@ -122,25 +126,27 @@ class MergeCommandTest extends TestCase
             $this->createStub(Finder::class),
         );
 
-        $input  = new ArrayInput([
-            'basefile' => 'basefile.yml',
-            'additionalFiles' => ['secondfile.yml'],
-        ]);
+        $input = new ArrayInput(
+            [
+                'basefile' => 'basefile.yml',
+                'additionalFiles' => ['secondfile.yml'],
+            ]
+        );
         $output = new TrimmedBufferOutput(1024);
-        self::assertEquals(0, $sut->run($input, $output));
+        $this->assertSame(0, $sut->run($input, $output));
 
-        self::assertSame('dummy-write', $output->fetch());
+        $this->assertSame('dummy-write', $output->fetch());
     }
 
     public function testRunWriteToFile(): void
     {
-        $definitionWriterMock  = new class implements DefinitionWriterInterface {
+        $definitionWriterMock = new class() implements DefinitionWriterInterface {
             public function write(SpecificationFile $specFile): string
             {
                 return 'dummy-data';
             }
         };
-        $openApiMergeInterface = new class implements OpenApiMergeInterface {
+        $openApiMergeInterface = new class() implements OpenApiMergeInterface {
             /** @param list<File> $additionalFiles */
             public function mergeFiles(
                 File $baseFile,
@@ -162,19 +168,18 @@ class MergeCommandTest extends TestCase
 
         $tmpFile = sys_get_temp_dir() . '/merge-result.json';
         try {
-            $input  = new ArrayInput([
-                'basefile'        => 'basefile.yml',
-                'additionalFiles' => ['secondfile.yml'],
-                '-o'              => $tmpFile,
-            ]);
-            $output = new TrimmedBufferOutput(1024);
-            self::assertEquals(0, $sut->run($input, $output));
-
-            self::assertSame(
-                sprintf('File successfully written to %s%s', $tmpFile, PHP_EOL),
-                $output->fetch(),
+            $input = new ArrayInput(
+                [
+                    'basefile' => 'basefile.yml',
+                    'additionalFiles' => ['secondfile.yml'],
+                    '-o' => $tmpFile,
+                ]
             );
-            self::assertStringEqualsFile($tmpFile, 'dummy-data');
+            $output = new TrimmedBufferOutput(1024);
+            $this->assertSame(0, $sut->run($input, $output));
+
+            $this->assertSame(sprintf('File successfully written to %s%s', $tmpFile, \PHP_EOL), $output->fetch());
+            $this->assertStringEqualsFile($tmpFile, 'dummy-data');
         } finally {
             @unlink($tmpFile);
         }
@@ -195,9 +200,9 @@ class MergeCommandTest extends TestCase
         string|bool|null $resolveReferenceValue,
         bool $expectedResolveReferenceValue,
     ): void {
-        $basefile              = 'basefile.yml';
-        $additionalFile        = 'secondfile.yml';
-        $definitionWriterMock  = new class implements DefinitionWriterInterface {
+        $basefile = 'basefile.yml';
+        $additionalFile = 'secondfile.yml';
+        $definitionWriterMock = new class() implements DefinitionWriterInterface {
             public function write(SpecificationFile $specFile): string
             {
                 return 'dummy-data';
@@ -208,10 +213,12 @@ class MergeCommandTest extends TestCase
             new File($basefile),
             [new File($additionalFile)],
             $expectedResolveReferenceValue,
-        )->willReturn(new SpecificationFile(
-            new File($basefile),
-            new OpenApi([]),
-        ));
+        )->willReturn(
+            new SpecificationFile(
+                new File($basefile),
+                new OpenApi([]),
+            ),
+        );
 
         $sut = new MergeCommand(
             $openApiMergeInterface,
@@ -220,17 +227,17 @@ class MergeCommandTest extends TestCase
         );
 
         $arguments = [
-            'basefile'             => $basefile,
-            'additionalFiles'      => [$additionalFile],
+            'basefile' => $basefile,
+            'additionalFiles' => [$additionalFile],
         ];
 
-        if ($resolveReferenceValue !== null) {
+        if (null !== $resolveReferenceValue) {
             $arguments['--resolve-references'] = $resolveReferenceValue;
         }
 
-        $input  = new ArrayInput($arguments);
+        $input = new ArrayInput($arguments);
         $output = new TrimmedBufferOutput(1024);
-        self::assertEquals(0, $sut->run($input, $output));
+        $this->assertSame(0, $sut->run($input, $output));
     }
 
     /**
@@ -246,15 +253,17 @@ class MergeCommandTest extends TestCase
         $openApiMergeInterface->method('mergeFiles')->with(
             new File($basefile),
             $expectedFiles,
-        )->willReturn(new SpecificationFile(
-            new File($basefile),
-            new OpenApi([]),
-        ));
+        )->willReturn(
+            new SpecificationFile(
+                new File($basefile),
+                new OpenApi([]),
+            ),
+        );
 
-        $sut    = new MergeCommand(
+        $sut = new MergeCommand(
             $openApiMergeInterface,
             $this->createStub(DefinitionWriterInterface::class),
-            new class implements Finder {
+            new class() implements Finder {
                 /** @return list<string> */
                 public function find(string $baseDirectory, string $searchString): array
                 {
@@ -262,9 +271,9 @@ class MergeCommandTest extends TestCase
                 }
             },
         );
-        $input  = new ArrayInput(array_merge(['basefile' => $basefile], $arguments));
+        $input = new ArrayInput(array_merge(['basefile' => $basefile], $arguments));
         $output = new TrimmedBufferOutput(1024);
-        self::assertEquals(0, $sut->run($input, $output));
+        $this->assertSame(0, $sut->run($input, $output));
     }
 
     /** @return iterable<string, array<string, mixed>> */

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests\Writer;
 
-use Generator;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Writer\DefinitionWriter;
@@ -16,21 +15,21 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(DefinitionWriter::class)]
-#[UsesClass('\Mthole\OpenApiMerge\FileHandling\File')]
-#[UsesClass('\Mthole\OpenApiMerge\FileHandling\SpecificationFile')]
-#[UsesClass('\Mthole\OpenApiMerge\Writer\Exception\InvalidFileTypeException')]
+#[UsesClass(File::class)]
+#[UsesClass(SpecificationFile::class)]
+#[UsesClass(InvalidFileTypeException::class)]
 class DefinitionWriterTest extends TestCase
 {
     #[DataProvider('validSpecificationFiles')]
     public function testWrite(SpecificationFile $specificationFile): void
     {
-        $sut    = new DefinitionWriter();
+        $sut = new DefinitionWriter();
         $result = $sut->write($specificationFile);
-        self::assertNotEmpty($result);
+        $this->assertNotEmpty($result);
     }
 
-    /** @return Generator<SpecificationFile[]> */
-    public static function validSpecificationFiles(): Generator
+    /** @return \Generator<SpecificationFile[]> */
+    public static function validSpecificationFiles(): \Generator
     {
         $specObject = new OpenApi([]);
 
@@ -77,14 +76,11 @@ class DefinitionWriterTest extends TestCase
         );
 
         $sut = new DefinitionWriter();
-        self::assertEquals(
-            <<<'JSON'
+        $this->assertSame(<<<'JSON'
             {
                 "openapi": "3.0.0"
             }
-            JSON,
-            $sut->writeToJson($specificationFile),
-        );
+            JSON, $sut->writeToJson($specificationFile));
     }
 
     public function testWriteYaml(): void
@@ -95,12 +91,9 @@ class DefinitionWriterTest extends TestCase
         );
 
         $sut = new DefinitionWriter();
-        self::assertEquals(
-            <<<'YML'
+        $this->assertSame(<<<'YML'
             openapi: 3.0.0
 
-            YML,
-            $sut->writeToYaml($specificationFile),
-        );
+            YML, $sut->writeToYaml($specificationFile));
     }
 }

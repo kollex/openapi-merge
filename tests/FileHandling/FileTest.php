@@ -11,19 +11,15 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
-use function getcwd;
-use function preg_quote;
-use function str_replace;
-
 #[CoversClass(File::class)]
-#[UsesClass('\Mthole\OpenApiMerge\FileHandling\Exception\IOException')]
+#[UsesClass(IOException::class)]
 class FileTest extends TestCase
 {
     #[DataProvider('fileExtensionProvider')]
     public function testGetFileExtension(string $filename, string $expectedExtension): void
     {
         $sut = new File($filename);
-        self::assertSame($expectedExtension, $sut->getFileExtension());
+        $this->assertSame($expectedExtension, $sut->getFileExtension());
     }
 
     /** @return list<list<string>> */
@@ -50,7 +46,7 @@ class FileTest extends TestCase
     public function testGetAbsoluteFileWithAbsoluteInvalidFile(): void
     {
         $invalidFilename = __FILE__ . '-nonexisting.dat';
-        $sut             = new File($invalidFilename);
+        $sut = new File($invalidFilename);
 
         $this->expectException(IOException::class);
         $this->expectExceptionMessageMatches('~"' . preg_quote($invalidFilename, '~') . '"~');
@@ -66,21 +62,15 @@ class FileTest extends TestCase
             __FILE__,
         );
 
-        self::assertNotSame(
-            __FILE__,
-            $filename,
-        );
+        $this->assertNotSame(__FILE__, $filename);
 
         $sut = new File($filename);
-        self::assertSame(
-            __FILE__,
-            $sut->getAbsoluteFile(),
-        );
+        $this->assertSame(__FILE__, $sut->getAbsoluteFile());
     }
 
     public function testGetAbsolutePath(): void
     {
         $sut = new File(__FILE__);
-        self::assertSame(__DIR__, $sut->getAbsolutePath());
+        $this->assertSame(__DIR__, $sut->getAbsolutePath());
     }
 }

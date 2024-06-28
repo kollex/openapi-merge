@@ -10,16 +10,14 @@ use Mthole\OpenApiMerge\Merge\MergerInterface;
 use Mthole\OpenApiMerge\Merge\ReferenceNormalizer;
 use Mthole\OpenApiMerge\Reader\FileReader;
 
-use function array_push;
-use function count;
-
 class OpenApiMerge implements OpenApiMergeInterface
 {
     /** @param list<MergerInterface> $merger */
     public function __construct(
-        private FileReader $openApiReader,
-        private array $merger,
-        private ReferenceNormalizer $referenceNormalizer,
+        private readonly FileReader $openApiReader,
+        /** @var MergerInterface[] $merger */
+        private readonly array $merger,
+        private readonly ReferenceNormalizer $referenceNormalizer,
     ) {
     }
 
@@ -29,10 +27,10 @@ class OpenApiMerge implements OpenApiMergeInterface
         $mergedOpenApiDefinition = $this->openApiReader->readFile($baseFile, $resolveReference)->getOpenApi();
 
         // use "for" instead of "foreach" to iterate over new added files
-        for ($i = 0; $i < count($additionalFiles); $i++) {
-            $additionalFile       = $additionalFiles[$i];
+        for ($i = 0; $i < \count($additionalFiles); ++$i) {
+            $additionalFile = $additionalFiles[$i];
             $additionalDefinition = $this->openApiReader->readFile($additionalFile, $resolveReference)->getOpenApi();
-            if (! $resolveReference) {
+            if (!$resolveReference) {
                 $resolvedReferenceResult = $this->referenceNormalizer->normalizeInlineReferences(
                     $additionalFile,
                     $additionalDefinition,
@@ -49,9 +47,9 @@ class OpenApiMerge implements OpenApiMergeInterface
             }
         }
 
-        if ($resolveReference && $mergedOpenApiDefinition->components !== null) {
-            $mergedOpenApiDefinition->components->schemas       = [];
-            $mergedOpenApiDefinition->components->responses     = [];
+        if ($resolveReference && null !== $mergedOpenApiDefinition->components) {
+            $mergedOpenApiDefinition->components->schemas = [];
+            $mergedOpenApiDefinition->components->responses = [];
             $mergedOpenApiDefinition->components->requestBodies = [];
         }
 

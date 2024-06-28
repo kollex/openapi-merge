@@ -8,14 +8,8 @@ use Mthole\OpenApiMerge\FileHandling\File;
 use openapiphp\openapi\spec\MediaType;
 use openapiphp\openapi\spec\OpenApi;
 use openapiphp\openapi\spec\Reference;
+use openapiphp\openapi\spec\Response;
 use openapiphp\openapi\spec\Schema;
-
-use function array_map;
-use function assert;
-use function count;
-use function preg_match;
-
-use const DIRECTORY_SEPARATOR;
 
 class ReferenceNormalizer
 {
@@ -26,22 +20,25 @@ class ReferenceNormalizer
         $refFileCollection = [];
         foreach ($openApiDefinition->paths as $path) {
             foreach ($path->getOperations() as $operation) {
-                assert($operation->responses !== null);
+                \assert(null !== $operation->responses);
                 foreach ($operation->responses->getResponses() as $statusCode => $response) {
-                    if ($response === null) {
+                    if (null === $response) {
                         continue;
                     }
 
                     if ($response instanceof Reference) {
                         $operation->responses->addResponse(
-                            (string) $statusCode,
+                            (string)$statusCode,
                             $this->normalizeReference($response, $refFileCollection),
                         );
+                    }
+
+                    if (!($response instanceof Response)) {
                         continue;
                     }
 
                     foreach ($response->content as $responseContent) {
-                        assert($responseContent instanceof MediaType);
+                        \assert($responseContent instanceof MediaType);
                         if ($responseContent->schema instanceof Reference) {
                             $responseContent->schema = $this->normalizeReference(
                                 $responseContent->schema,
@@ -52,7 +49,7 @@ class ReferenceNormalizer
                         if ($responseContent->schema instanceof Schema) {
                             $schemaProperties = $responseContent->schema->properties ?? [];
                             foreach ($schemaProperties as $propertyName => $property) {
-                                if (! ($property instanceof Reference)) {
+                                if (!($property instanceof Reference)) {
                                     continue;
                                 }
 
@@ -62,7 +59,7 @@ class ReferenceNormalizer
                                 );
                             }
 
-                            if ($schemaProperties !== []) {
+                            if ([] !== $schemaProperties) {
                                 $responseContent->schema->properties = $schemaProperties;
                             }
                         }
@@ -79,7 +76,7 @@ class ReferenceNormalizer
                             }
                         }
 
-                        if (count($newExamples) <= 0) {
+                        if (\count($newExamples) <= 0) {
                             continue;
                         }
 
@@ -98,12 +95,12 @@ class ReferenceNormalizer
     /** @param list<string> $refFileCollection */
     private function normalizeReference(Reference $reference, array &$refFileCollection): Reference
     {
-        $matches       = [];
+        $matches = [];
         $referenceFile = $reference->getReference();
-        if (preg_match('~^(?<referenceFile>.*)(?<referenceString>#/.*)~', $referenceFile, $matches) === 1) {
+        if (1 === preg_match('~^(?<referenceFile>.*)(?<referenceString>#/.*)~', $referenceFile, $matches)) {
             $refFile = $matches['referenceFile'];
 
-            if ($refFile !== '') {
+            if ('' !== $refFile) {
                 $refFileCollection[] = $refFile;
             }
 
@@ -122,7 +119,7 @@ class ReferenceNormalizer
     {
         return array_map(
             static fn (string $refFile): File => new File(
-                $openApiFile->getAbsolutePath() . DIRECTORY_SEPARATOR . $refFile,
+                $openApiFile->getAbsolutePath() . \DIRECTORY_SEPARATOR . $refFile,
             ),
             $refFileCollection,
         );
