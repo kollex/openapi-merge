@@ -4,14 +4,19 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests\Merge;
 
-use cebe\openapi\spec\PathItem;
-use cebe\openapi\spec\Paths;
 use Mthole\OpenApiMerge\Merge\PathMerger;
+use openapiphp\openapi\spec\OpenApi;
+use openapiphp\openapi\spec\PathItem;
+use openapiphp\openapi\spec\Paths;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 use function array_keys;
 
-/** @covers \Mthole\OpenApiMerge\Merge\PathMerger */
+#[CoversClass(PathMerger::class)]
+#[UsesClass('\Mthole\OpenApiMerge\Util\Json')]
 class PathMergerTest extends TestCase
 {
     public function testMergeDidNotChangeOriginals(): void
@@ -21,11 +26,14 @@ class PathMergerTest extends TestCase
             '/route2' => new PathItem([]),
         ]);
 
-        $sut         = new PathMerger();
-        $mergedPaths = $sut->mergePaths($existingPath, $newPaths);
+        $existingSpec = new OpenApi(['paths' => $existingPath]);
+        $newSpec      = new OpenApi(['paths' => $newPaths]);
+
+        $sut     = new PathMerger();
+        $newSpec = $sut->merge($existingSpec, $newSpec);
         self::assertCount(1, $existingPath);
         self::assertCount(1, $newPaths);
-        self::assertCount(2, $mergedPaths);
+        self::assertCount(2, $newSpec->paths);
     }
 
     /**
@@ -33,9 +41,8 @@ class PathMergerTest extends TestCase
      * @param Paths<PathItem>              $newPaths
      * @param array<string>                $expectedRoutes
      * @param array<string, array<string>> $expectedMethods
-     *
-     * @dataProvider pathCombinationDataProvider
      */
+    #[DataProvider('pathCombinationDataProvider')]
     public function testMergePaths(
         Paths $existingPaths,
         Paths $newPaths,
@@ -43,12 +50,15 @@ class PathMergerTest extends TestCase
         array $expectedMethods,
     ): void {
         $sut         = new PathMerger();
-        $mergedPaths = $sut->mergePaths($existingPaths, $newPaths);
+        $mergedPaths = $sut->merge(
+            new OpenApi(['paths' => $existingPaths]),
+            new OpenApi(['paths' => $newPaths]),
+        );
 
-        self::assertSame($expectedRoutes, array_keys($mergedPaths->getPaths()));
+        self::assertSame($expectedRoutes, array_keys($mergedPaths->paths->getPaths()));
 
         foreach ($expectedMethods as $routeName => $expectedRouteMethods) {
-            $pathItem = $mergedPaths->getPath($routeName);
+            $pathItem = $mergedPaths->paths->getPath($routeName);
             self::assertNotNull($pathItem);
             self::assertSame(
                 $expectedRouteMethods,
@@ -58,7 +68,7 @@ class PathMergerTest extends TestCase
     }
 
     /** @return iterable<string, list<mixed>> */
-    public function pathCombinationDataProvider(): iterable
+    public static function pathCombinationDataProvider(): iterable
     {
         yield 'simple routes' => [
             new Paths(['/route1' => new PathItem([])]),
@@ -99,7 +109,7 @@ class PathMergerTest extends TestCase
                 ]),
             ]),
             ['/route1'],
-            ['/route1' => ['get','put','post']],
+            ['/route1' => ['get','post','put']],
         ];
 
         yield 'explicit null method' => [
