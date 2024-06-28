@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Merge;
 
+
 use cebe\openapi\spec\Components;
 use cebe\openapi\spec\OpenApi;
 use Mthole\OpenApiMerge\Merge\ComponentsMerger;

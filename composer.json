@@ -15,7 +15,7 @@
   ],
   "require": {
     "php": ">= 8.2",
-    "devizzent/cebe-php-openapi": "^1.0",
+    "cebe/php-openapi": "^1.7",
     "symfony/console": "^6.4"
   },
   "require-dev": {
