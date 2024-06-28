@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests;
 
-use cebe\openapi\exceptions\TypeErrorException;
-use cebe\openapi\spec\OpenApi;
-use cebe\openapi\spec\Paths;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Merge\ComponentsMerger;
@@ -18,6 +15,9 @@ use Mthole\OpenApiMerge\Reader\Exception\InvalidFileTypeException;
 use Mthole\OpenApiMerge\Reader\FileReader;
 use Mthole\OpenApiMerge\Reader\OpenApiReaderWrapper;
 use Mthole\OpenApiMerge\Util\Json;
+use openapiphp\openapi\exceptions\TypeErrorException;
+use openapiphp\openapi\spec\Components;
+use openapiphp\openapi\spec\OpenApi;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -54,9 +54,9 @@ class OpenApiMergeTest extends TestCase
         )->getOpenApi();
         \assert($result instanceof OpenApi);
 
-        self::assertCount(1, $result->paths->getPaths());
-        self::assertNotNull($result->components);
-        self::assertIsArray($result->components->schemas);
+        $this->assertCount(1, $result->paths->getPaths());
+        $this->assertNotNull($result->components);
+        $this->assertIsArray($result->components->schemas);
     }
 
     public function testMergeFileWithoutComponents(): void
@@ -76,7 +76,7 @@ class OpenApiMergeTest extends TestCase
         )->getOpenApi();
         \assert($result instanceof OpenApi);
 
-        self::assertNull($result->components);
+        $this->assertNull($result->components);
     }
 
     /**
@@ -123,15 +123,12 @@ class OpenApiMergeTest extends TestCase
         );
 
         $mergedDefinition = $mergedResult->getOpenApi();
-        if (null === $mergedDefinition->paths) {
-            $mergedDefinition->paths = new Paths([]);
+        if (null === $mergedDefinition->components) {
+            $mergedDefinition->components = new Components([]);
         }
 
-        self::assertCount(1, $mergedDefinition->paths);
-        self::assertSame(
-            ['ProblemResponse', 'pingResponse'],
-            array_keys($mergedDefinition->components->schemas), // @phpstan-ignore-line
-        );
+        $this->assertCount(1, $mergedDefinition->paths);
+        $this->assertSame(['ProblemResponse', 'pingResponse'], array_keys($mergedDefinition->components->schemas));
     }
 
     public function testReferenceNormalizerWillNotBeExecuted(): void

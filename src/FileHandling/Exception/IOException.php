@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\FileHandling\Exception;
 
+/**
+ * @see \Mthole\OpenApiMerge\Tests\FileHandling\Exception\IOExceptionTest
+ */
 class IOException extends \Exception
 {
     private string $filename;

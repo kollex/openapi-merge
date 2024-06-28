@@ -14,10 +14,10 @@ class OpenApiMerge implements OpenApiMergeInterface
 {
     /** @param list<MergerInterface> $merger */
     public function __construct(
-        private FileReader $openApiReader,
+        private readonly FileReader $openApiReader,
         /** @var MergerInterface[] $merger */
-        private array $merger,
-        private ReferenceNormalizer $referenceNormalizer,
+        private readonly array $merger,
+        private readonly ReferenceNormalizer $referenceNormalizer,
     ) {
     }
 
@@ -48,8 +48,8 @@ class OpenApiMerge implements OpenApiMergeInterface
         }
 
         if ($resolveReference && null !== $mergedOpenApiDefinition->components) {
-            $mergedOpenApiDefinition->components->schemas       = [];
-            $mergedOpenApiDefinition->components->responses     = [];
+            $mergedOpenApiDefinition->components->schemas = [];
+            $mergedOpenApiDefinition->components->responses = [];
             $mergedOpenApiDefinition->components->requestBodies = [];
         }
 

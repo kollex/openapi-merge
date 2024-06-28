@@ -17,9 +17,9 @@ class RegexFinderTest extends TestCase
     {
         $sut = new RegexFinder();
         $files = $sut->find(__DIR__ . '/Fixtures', $search);
-        self::assertCount($expectedFilesCount, $files);
+        $this->assertCount($expectedFilesCount, $files);
         foreach (array_keys($files) as $key) {
-            self::assertIsNumeric($key);
+            $this->assertIsNumeric($key);
         }
     }
 

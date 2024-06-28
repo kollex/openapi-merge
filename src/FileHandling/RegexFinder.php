@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\FileHandling;
 
+/**
+ * @see \Mthole\OpenApiMerge\Tests\FileHandling\RegexFinderTest
+ */
 class RegexFinder implements Finder
 {
     /** @return list<string> */

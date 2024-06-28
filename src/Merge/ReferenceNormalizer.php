@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Merge;
 
-use cebe\openapi\spec\MediaType;
-use cebe\openapi\spec\OpenApi;
-use cebe\openapi\spec\Reference;
-use cebe\openapi\spec\Response;
 use Mthole\OpenApiMerge\FileHandling\File;
+use openapiphp\openapi\spec\MediaType;
+use openapiphp\openapi\spec\OpenApi;
+use openapiphp\openapi\spec\Reference;
+use openapiphp\openapi\spec\Response;
+use openapiphp\openapi\spec\Schema;
 
 class ReferenceNormalizer
 {
@@ -21,13 +22,13 @@ class ReferenceNormalizer
             foreach ($path->getOperations() as $operation) {
                 \assert(null !== $operation->responses);
                 foreach ($operation->responses->getResponses() as $statusCode => $response) {
-                    if ($response === null) {
+                    if (null === $response) {
                         continue;
                     }
 
                     if ($response instanceof Reference) {
                         $operation->responses->addResponse(
-                            (string) $statusCode,
+                            (string)$statusCode,
                             $this->normalizeReference($response, $refFileCollection),
                         );
                     }
@@ -48,7 +49,7 @@ class ReferenceNormalizer
                         if ($responseContent->schema instanceof Schema) {
                             $schemaProperties = $responseContent->schema->properties ?? [];
                             foreach ($schemaProperties as $propertyName => $property) {
-                                if (! ($property instanceof Reference)) {
+                                if (!($property instanceof Reference)) {
                                     continue;
                                 }
 
@@ -58,7 +59,7 @@ class ReferenceNormalizer
                                 );
                             }
 
-                            if ($schemaProperties !== []) {
+                            if ([] !== $schemaProperties) {
                                 $responseContent->schema->properties = $schemaProperties;
                             }
                         }

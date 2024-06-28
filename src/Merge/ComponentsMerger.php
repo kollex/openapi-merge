@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Merge;
 
-use cebe\openapi\spec\Components;
-use cebe\openapi\spec\OpenApi;
 use Mthole\OpenApiMerge\Util\Json;
+use openapiphp\openapi\spec\Components;
+use openapiphp\openapi\spec\OpenApi;
 
 class ComponentsMerger implements MergerInterface
 {
@@ -39,8 +39,8 @@ class ComponentsMerger implements MergerInterface
         }
 
         if (
-            count($existingComponents->requestBodies ?? []) > 0
-            || count($newComponents->requestBodies ?? []) > 0
+            \count($existingComponents->requestBodies ?? []) > 0
+            || \count($newComponents->requestBodies ?? []) > 0
         ) {
             $mergedComponents->requestBodies = array_merge(
                 $existingComponents->requestBodies ?? [],
@@ -49,8 +49,8 @@ class ComponentsMerger implements MergerInterface
         }
 
         if (
-            count($existingComponents->responses ?? []) > 0
-            || count($newComponents->responses ?? []) > 0
+            \count($existingComponents->responses ?? []) > 0
+            || \count($newComponents->responses ?? []) > 0
         ) {
             $mergedComponents->responses = array_merge(
                 $existingComponents->responses ?? [],

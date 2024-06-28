@@ -17,22 +17,21 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @see \Mthole\OpenApiMerge\Tests\Console\Command\MergeCommandTest
+ */
 final class MergeCommand extends Command
 {
     protected static $defaultDescription = 'Merge multiple OpenAPI definition files into a single file';
     public const COMMAND_NAME = 'openapi:merge';
 
-    private readonly DirReaderInterface $dirReader;
-
     public function __construct(
         private readonly OpenApiMergeInterface $merger,
         private readonly DefinitionWriterInterface $definitionWriter,
         private readonly Finder $fileFinder,
-        DirReaderInterface $dirReader = null,
+        private readonly DirReaderInterface $dirReader = new DirReader(),
     ) {
         parent::__construct(self::COMMAND_NAME);
-
-        $this->dirReader = $dirReader ?? new DirReader();
     }
 
     protected function configure(): void

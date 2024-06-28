@@ -15,6 +15,11 @@ jobs:
     strategy:
       matrix:
         include:
+          - php-version: "8.1"
+            composer-deps: lowest
+          - php-version: "8.1"
+            composer-deps: latest
+            with-cs-check: true
           - php-version: "8.2"
             composer-deps: latest
           - php-version: "8.3"
@@ -58,7 +63,7 @@ jobs:
         run: "composer show"
 
       - name: "Run code style check"
-        run:  "composer run-script cs-check"
+        run:  "composer run-script phpcs"
         if: ${{ matrix.with-cs-check == true }}
 
       - name: "Run rector"

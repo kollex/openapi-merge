@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Merge;
 
-use cebe\openapi\spec\OpenApi;
-use cebe\openapi\spec\Paths;
 use Mthole\OpenApiMerge\Util\Json;
+use openapiphp\openapi\spec\OpenApi;
+use openapiphp\openapi\spec\Paths;
 
+/**
+ * @see \Mthole\OpenApiMerge\Tests\Merge\PathMergerTest
+ */
 class PathMerger implements MergerInterface
 {
     private const MERGE_METHODS = [

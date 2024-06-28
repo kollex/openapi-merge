@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests\Reader;
 
-use cebe\openapi\spec\OpenApi;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Reader\Exception\InvalidFileTypeException;
 use Mthole\OpenApiMerge\Reader\FileReader;
 use Mthole\OpenApiMerge\Reader\OpenApiReaderWrapper;
+use openapiphp\openapi\spec\OpenApi;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -20,11 +20,8 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(SpecificationFile::class)]
 #[UsesClass(InvalidFileTypeException::class)]
 #[UsesClass(OpenApiReaderWrapper::class)]
-final class FileReaderTest extends TestCase
+class FileReaderTest extends TestCase
 {
-    private const DUMMY_JSON_FILE = __DIR__ . '/Fixtures/valid-openapi.json';
-    private const DUMMY_YAML_FILE = __DIR__ . '/Fixtures/valid-openapi.yml';
-
     #[DataProvider('validFilesDataProvider')]
     public function testValidFiles(string $filename): void
     {
@@ -32,7 +29,7 @@ final class FileReaderTest extends TestCase
         $sut = new FileReader();
         $specification = $sut->readFile($file);
 
-        self::assertSame($file, $specification->getFile());
+        $this->assertSame($file, $specification->getFile());
     }
 
     /** @return \Generator<string[]> */
@@ -52,23 +49,21 @@ final class FileReaderTest extends TestCase
         $sut->readFile($file);
     }
 
-    #[DataProvider('passResolveReferenceJsonProvider')]
-    public function testPassResolveReferenceForJsonFile(string $providedFileName, bool $providedResolveReferences): void
+    public function testPassResolveReference(): void
     {
-        $readerMock = $this->createStub(OpenApiReaderWrapper::class);
+        $dummyJsonFile = __DIR__ . '/Fixtures/valid-openapi.json';
+        $dummyYamlFile = __DIR__ . '/Fixtures/valid-openapi.yml';
 
         $readerMock = $this->createMock(OpenApiReaderWrapper::class);
-        $matcher    = self::exactly(3);
+        $matcher = self::exactly(3);
         $readerMock->expects($matcher)
             ->method('readFromJsonFile')
             ->willReturnCallback(
-                static function () use ($matcher, $dummyJsonFile) {
-                    return match ($matcher->numberOfInvocations()) {
-                        1 => [$dummyJsonFile, OpenApi::class, true],
-                        2 => [$dummyJsonFile, OpenApi::class, true],
-                        3 => [$dummyJsonFile, OpenApi::class, false],
-                        default => throw new InvalidArgumentException('Did not expect more calls')
-                    };
+                static fn () => match ($matcher->numberOfInvocations()) {
+                    1 => [$dummyJsonFile, OpenApi::class, true],
+                    2 => [$dummyJsonFile, OpenApi::class, true],
+                    3 => [$dummyJsonFile, OpenApi::class, false],
+                    default => throw new \InvalidArgumentException('Did not expect more calls')
                 },
             )->willReturn(new OpenApi([]));
         $matcher = self::exactly(3);
@@ -76,13 +71,11 @@ final class FileReaderTest extends TestCase
         $readerMock->expects($matcher)
             ->method('readFromYamlFile')
             ->willReturnCallback(
-                static function () use ($matcher, $dummyYamlFile) {
-                    return match ($matcher->numberOfInvocations()) {
-                        1 => [$dummyYamlFile, OpenApi::class, true],
-                        2 => [$dummyYamlFile, OpenApi::class, true],
-                        3 => [$dummyYamlFile, OpenApi::class, false],
-                        default => throw new InvalidArgumentException('Did not expect more calls')
-                    };
+                static fn () => match ($matcher->numberOfInvocations()) {
+                    1 => [$dummyYamlFile, OpenApi::class, true],
+                    2 => [$dummyYamlFile, OpenApi::class, true],
+                    3 => [$dummyYamlFile, OpenApi::class, false],
+                    default => throw new \InvalidArgumentException('Did not expect more calls')
                 },
             )->willReturn(new OpenApi([]));
 

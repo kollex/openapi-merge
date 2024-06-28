@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Writer;
 
-use cebe\openapi\Writer;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Writer\Exception\InvalidFileTypeException;
+use openapiphp\openapi\Writer;
 
+/**
+ * @see \Mthole\OpenApiMerge\Tests\Writer\DefinitionWriterTest
+ */
 final class DefinitionWriter implements DefinitionWriterInterface
 {
     public function write(SpecificationFile $specFile): string

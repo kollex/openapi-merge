@@ -14,7 +14,7 @@ class InvalidFileTypeExceptionTest extends TestCase
     public function testCreateException(): void
     {
         $exception = InvalidFileTypeException::createFromExtension('exe');
-        self::assertSame('exe', $exception->getFileExtension());
-        self::assertSame('The filetype "exe" is not supported for dumping', $exception->getMessage());
+        $this->assertSame('exe', $exception->getFileExtension());
+        $this->assertSame('The filetype "exe" is not supported for dumping', $exception->getMessage());
     }
 }

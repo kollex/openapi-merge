@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace Merge;
 
-
-use cebe\openapi\spec\Components;
-use cebe\openapi\spec\OpenApi;
 use Mthole\OpenApiMerge\Merge\ComponentsMerger;
 use Mthole\OpenApiMerge\Util\Json;
+use openapiphp\openapi\spec\Components;
+use openapiphp\openapi\spec\OpenApi;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -20,9 +19,9 @@ class ComponentsMergerTest extends TestCase
 {
     #[DataProvider('mergeDataProvider')]
     public function testMerge(
-        Components|null $existingComponents,
-        Components|null $newComponents,
-        Components|null $expectedComponents,
+        ?Components $existingComponents,
+        ?Components $newComponents,
+        ?Components $expectedComponents,
     ): void {
         $sut = new ComponentsMerger();
         $existingSpec = new OpenApi(['components' => $existingComponents]);
@@ -30,8 +29,8 @@ class ComponentsMergerTest extends TestCase
         $expectedSpec = new OpenApi(['components' => $expectedComponents]);
 
         $stateBefore = $existingSpec->getSerializableData();
-        self::assertEquals($expectedSpec, $sut->merge($existingSpec, $newSpec));
-        self::assertEquals($stateBefore, $existingSpec->getSerializableData());
+        $this->assertEquals($expectedSpec, $sut->merge($existingSpec, $newSpec));
+        $this->assertEquals($stateBefore, $existingSpec->getSerializableData());
     }
 
     /** @return iterable<string, list<Components|null>> */

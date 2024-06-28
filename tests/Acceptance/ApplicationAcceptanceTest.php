@@ -8,11 +8,6 @@ use Composer\InstalledVersions;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
-use function implode;
-use function shell_exec;
-use function sprintf;
-use function version_compare;
-
 #[CoversNothing]
 final class ApplicationAcceptanceTest extends TestCase
 {
@@ -34,14 +29,14 @@ final class ApplicationAcceptanceTest extends TestCase
             )
         );
 
-        self::assertNotNull($output);
-        self::assertNotFalse($output);
+        $this->assertNotNull($output);
+        $this->assertNotFalse($output);
 
         $yamlVersion = InstalledVersions::getVersion('symfony/yaml') ?? '1.0';
         if (version_compare($yamlVersion, '6.1.0', '<')) {
-            self::assertStringEqualsFile(__DIR__ . '/Fixtures/expected_yaml610.yml', $output);
+            $this->assertStringEqualsFile(__DIR__ . '/Fixtures/expected_yaml610.yml', $output);
         } else {
-            self::assertStringEqualsFile(__DIR__ . '/Fixtures/expected.yml', $output);
+            $this->assertStringEqualsFile(__DIR__ . '/Fixtures/expected.yml', $output);
         }
     }
 }

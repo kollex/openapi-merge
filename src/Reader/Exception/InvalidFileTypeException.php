@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Reader\Exception;
 
+/**
+ * @see \Mthole\OpenApiMerge\Tests\Reader\Exception\InvalidFileTypeExceptionTest
+ */
 class InvalidFileTypeException extends \Exception
 {
     private string $fileExtension;

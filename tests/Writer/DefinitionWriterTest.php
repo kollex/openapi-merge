@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests\Writer;
 
-use cebe\openapi\spec\OpenApi;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Writer\DefinitionWriter;
 use Mthole\OpenApiMerge\Writer\Exception\InvalidFileTypeException;
+use openapiphp\openapi\spec\OpenApi;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -25,7 +25,7 @@ class DefinitionWriterTest extends TestCase
     {
         $sut = new DefinitionWriter();
         $result = $sut->write($specificationFile);
-        self::assertNotEmpty($result);
+        $this->assertNotEmpty($result);
     }
 
     /** @return \Generator<SpecificationFile[]> */
@@ -76,14 +76,11 @@ class DefinitionWriterTest extends TestCase
         );
 
         $sut = new DefinitionWriter();
-        self::assertEquals(
-            <<<'JSON'
+        $this->assertSame(<<<'JSON'
             {
                 "openapi": "3.0.0"
             }
-            JSON,
-            $sut->writeToJson($specificationFile),
-        );
+            JSON, $sut->writeToJson($specificationFile));
     }
 
     public function testWriteYaml(): void
@@ -94,12 +91,9 @@ class DefinitionWriterTest extends TestCase
         );
 
         $sut = new DefinitionWriter();
-        self::assertEquals(
-            <<<'YML'
+        $this->assertSame(<<<'YML'
             openapi: 3.0.0
 
-            YML,
-            $sut->writeToYaml($specificationFile),
-        );
+            YML, $sut->writeToYaml($specificationFile));
     }
 }

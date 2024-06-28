@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Merge;
 
-use cebe\openapi\spec\OpenApi;
 use Mthole\OpenApiMerge\Merge\SecurityPathMerger;
 use Mthole\OpenApiMerge\Util\Json;
+use openapiphp\openapi\spec\OpenApi;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -30,8 +30,8 @@ class SecurityPathMergerTest extends TestCase
         );
 
         $stateBefore = $existingSpec->getSerializableData();
-        self::assertEquals($expectedSpec, $result);
-        self::assertEquals($stateBefore, $existingSpec->getSerializableData());
+        $this->assertEquals($expectedSpec, $result);
+        $this->assertEquals($stateBefore, $existingSpec->getSerializableData());
     }
 
     /** @return iterable<string, list<OpenApi|null>> */

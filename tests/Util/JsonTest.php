@@ -18,7 +18,7 @@ class JsonTest extends TestCase
     #[DataProvider('toArrayDataprovider')]
     public function testToArray(mixed $data, array $expected): void
     {
-        self::assertSame($expected, Json::toArray($data));
+        $this->assertSame($expected, Json::toArray($data));
     }
 
     /** @return iterable<string, list<mixed|array<mixed>>> */

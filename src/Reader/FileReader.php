@@ -9,13 +9,13 @@ use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
 use Mthole\OpenApiMerge\Reader\Exception\InvalidFileTypeException;
 use openapiphp\openapi\spec\OpenApi;
 
-final class FileReader
+/**
+ * @see \Mthole\OpenApiMerge\Tests\Reader\FileReaderTest
+ */
+final readonly class FileReader
 {
-    private readonly OpenApiReaderWrapper $openApiReader;
-
-    public function __construct(OpenApiReaderWrapper $openApiReader = null)
+    public function __construct(private OpenApiReaderWrapper $openApiReader = new OpenApiReaderWrapper())
     {
-        $this->openApiReader = $openApiReader ?? new OpenApiReaderWrapper();
     }
 
     public function readFile(File $inputFile, bool $resolveReferences = true): SpecificationFile

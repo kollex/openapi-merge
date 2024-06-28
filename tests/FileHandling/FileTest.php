@@ -19,7 +19,7 @@ class FileTest extends TestCase
     public function testGetFileExtension(string $filename, string $expectedExtension): void
     {
         $sut = new File($filename);
-        self::assertSame($expectedExtension, $sut->getFileExtension());
+        $this->assertSame($expectedExtension, $sut->getFileExtension());
     }
 
     /** @return list<list<string>> */
@@ -62,21 +62,15 @@ class FileTest extends TestCase
             __FILE__,
         );
 
-        self::assertNotSame(
-            __FILE__,
-            $filename,
-        );
+        $this->assertNotSame(__FILE__, $filename);
 
         $sut = new File($filename);
-        self::assertSame(
-            __FILE__,
-            $sut->getAbsoluteFile(),
-        );
+        $this->assertSame(__FILE__, $sut->getAbsoluteFile());
     }
 
     public function testGetAbsolutePath(): void
     {
         $sut = new File(__FILE__);
-        self::assertSame(__DIR__, $sut->getAbsolutePath());
+        $this->assertSame(__DIR__, $sut->getAbsolutePath());
     }
 }

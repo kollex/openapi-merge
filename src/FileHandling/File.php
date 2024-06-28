@@ -6,6 +6,9 @@ namespace Mthole\OpenApiMerge\FileHandling;
 
 use Mthole\OpenApiMerge\FileHandling\Exception\IOException;
 
+/**
+ * @see \Mthole\OpenApiMerge\Tests\FileHandling\FileTest
+ */
 final readonly class File
 {
     public function __construct(private string $filename)

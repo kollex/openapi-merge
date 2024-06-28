@@ -7,8 +7,6 @@ namespace Mthole\OpenApiMerge\Tests;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
-use function assert;
-
 #[CoversNothing]
 class AssertionsEnabledTest extends TestCase
 {

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Util;
 
+/**
+ * @see \Mthole\OpenApiMerge\Tests\Util\JsonTest
+ */
 class Json
 {
     /** @return array<mixed> */

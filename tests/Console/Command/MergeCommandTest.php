@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Mthole\OpenApiMerge\Tests\Console\Command;
 
-use cebe\openapi\spec\OpenApi;
 use Mthole\OpenApiMerge\Console\Command\MergeCommand;
 use Mthole\OpenApiMerge\FileHandling\File;
 use Mthole\OpenApiMerge\FileHandling\Finder;
 use Mthole\OpenApiMerge\FileHandling\SpecificationFile;
-use Mthole\OpenApiMerge\Filesystem\DirReaderInterface;
 use Mthole\OpenApiMerge\OpenApiMergeInterface;
 use Mthole\OpenApiMerge\Writer\DefinitionWriterInterface;
+use openapiphp\openapi\spec\OpenApi;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\UsesClass;
@@ -134,9 +133,9 @@ class MergeCommandTest extends TestCase
             ]
         );
         $output = new TrimmedBufferOutput(1024);
-        self::assertEquals(0, $sut->run($input, $output));
+        $this->assertSame(0, $sut->run($input, $output));
 
-        self::assertSame('dummy-write', $output->fetch());
+        $this->assertSame('dummy-write', $output->fetch());
     }
 
     public function testRunWriteToFile(): void
@@ -177,13 +176,10 @@ class MergeCommandTest extends TestCase
                 ]
             );
             $output = new TrimmedBufferOutput(1024);
-            self::assertEquals(0, $sut->run($input, $output));
+            $this->assertSame(0, $sut->run($input, $output));
 
-            self::assertSame(
-                sprintf('File successfully written to %s%s', $tmpFile, \PHP_EOL),
-                $output->fetch(),
-            );
-            self::assertStringEqualsFile($tmpFile, 'dummy-data');
+            $this->assertSame(sprintf('File successfully written to %s%s', $tmpFile, \PHP_EOL), $output->fetch());
+            $this->assertStringEqualsFile($tmpFile, 'dummy-data');
         } finally {
             @unlink($tmpFile);
         }
@@ -241,7 +237,7 @@ class MergeCommandTest extends TestCase
 
         $input = new ArrayInput($arguments);
         $output = new TrimmedBufferOutput(1024);
-        self::assertEquals(0, $sut->run($input, $output));
+        $this->assertSame(0, $sut->run($input, $output));
     }
 
     /**
@@ -277,7 +273,7 @@ class MergeCommandTest extends TestCase
         );
         $input = new ArrayInput(array_merge(['basefile' => $basefile], $arguments));
         $output = new TrimmedBufferOutput(1024);
-        self::assertEquals(0, $sut->run($input, $output));
+        $this->assertSame(0, $sut->run($input, $output));
     }
 
     /** @return iterable<string, array<string, mixed>> */
