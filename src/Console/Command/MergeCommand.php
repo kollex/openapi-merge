@@ -97,7 +97,7 @@ final class MergeCommand extends Command
         $baseFile        = $input->getArgument('basefile');
         $additionalFiles = $input->getArgument('additionalFiles');
 
-        if ($input->hasOption('dir')) {
+        if ($input->getOption('dir')) {
             $additionalFiles = (array) ($additionalFiles ?? []);
             $dirs            = array_unique((array) $input->getOption('dir'));
 
