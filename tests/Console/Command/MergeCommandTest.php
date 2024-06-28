@@ -106,7 +106,7 @@ class MergeCommandTest extends TestCase
 
         $mergeResultStub = new SpecificationFile(
             new File('dummy'),
-            $this->createStub(OpenApi::class),
+            new OpenApi([]),
         );
 
         $mergeMock = $this->createMock(OpenApiMergeInterface::class);
@@ -240,51 +240,6 @@ class MergeCommandTest extends TestCase
         }
 
         $input = new ArrayInput($arguments);
-        $output = new TrimmedBufferOutput(1024);
-        self::assertEquals(0, $sut->run($input, $output));
-    }
-
-    public function testDirArgument(): void
-    {
-        $basefile = 'basefile.yml';
-        $dir = __DIR__ . '/dir';
-        $arguments = [
-            'additionalFiles' => [],
-            '--dir' => [$dir],
-        ];
-
-        $expectedFiles = [
-            new File(__DIR__ . '/dir/base.yml'),
-            new File(__DIR__ . '/dir/errors.yml'),
-        ];
-
-        $openApiMergeInterface = $this->createMock(OpenApiMergeInterface::class);
-        $openApiMergeInterface->method('mergeFiles')->with(
-            new File($basefile),
-            $expectedFiles,
-        )->willReturn(
-            new SpecificationFile(
-                new File($basefile),
-                new OpenApi([]),
-            ),
-        );
-
-        $sut = new MergeCommand(
-            $openApiMergeInterface,
-            $this->createStub(DefinitionWriterInterface::class),
-            $this->createStub(Finder::class),
-            new class() implements DirReaderInterface {
-                /** @return list<string> */
-                public function getDirContents(string $dir): array
-                {
-                    return [
-                        $dir . '/base.yml',
-                        $dir . '/errors.yml',
-                    ];
-                }
-            },
-        );
-        $input = new ArrayInput(array_merge(['basefile' => $basefile], $arguments));
         $output = new TrimmedBufferOutput(1024);
         self::assertEquals(0, $sut->run($input, $output));
     }

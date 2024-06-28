@@ -21,9 +21,13 @@ class ReferenceNormalizer
             foreach ($path->getOperations() as $operation) {
                 \assert(null !== $operation->responses);
                 foreach ($operation->responses->getResponses() as $statusCode => $response) {
+                    if ($response === null) {
+                        continue;
+                    }
+
                     if ($response instanceof Reference) {
                         $operation->responses->addResponse(
-                            $statusCode,
+                            (string) $statusCode,
                             $this->normalizeReference($response, $refFileCollection),
                         );
                     }
@@ -39,6 +43,24 @@ class ReferenceNormalizer
                                 $responseContent->schema,
                                 $refFileCollection,
                             );
+                        }
+
+                        if ($responseContent->schema instanceof Schema) {
+                            $schemaProperties = $responseContent->schema->properties ?? [];
+                            foreach ($schemaProperties as $propertyName => $property) {
+                                if (! ($property instanceof Reference)) {
+                                    continue;
+                                }
+
+                                $schemaProperties[$propertyName] = $this->normalizeReference(
+                                    $property,
+                                    $refFileCollection,
+                                );
+                            }
+
+                            if ($schemaProperties !== []) {
+                                $responseContent->schema->properties = $schemaProperties;
+                            }
                         }
 
                         $newExamples = [];

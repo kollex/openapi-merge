@@ -8,6 +8,11 @@ use Composer\InstalledVersions;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
+use function implode;
+use function shell_exec;
+use function sprintf;
+use function version_compare;
+
 #[CoversNothing]
 final class ApplicationAcceptanceTest extends TestCase
 {

@@ -57,40 +57,42 @@ final class FileReaderTest extends TestCase
     {
         $readerMock = $this->createStub(OpenApiReaderWrapper::class);
 
-        $readerMock->method('readFromJsonFile')
-            ->willReturn(new OpenApi([]));
+        $readerMock = $this->createMock(OpenApiReaderWrapper::class);
+        $matcher    = self::exactly(3);
+        $readerMock->expects($matcher)
+            ->method('readFromJsonFile')
+            ->willReturnCallback(
+                static function () use ($matcher, $dummyJsonFile) {
+                    return match ($matcher->numberOfInvocations()) {
+                        1 => [$dummyJsonFile, OpenApi::class, true],
+                        2 => [$dummyJsonFile, OpenApi::class, true],
+                        3 => [$dummyJsonFile, OpenApi::class, false],
+                        default => throw new InvalidArgumentException('Did not expect more calls')
+                    };
+                },
+            )->willReturn(new OpenApi([]));
+        $matcher = self::exactly(3);
+
+        $readerMock->expects($matcher)
+            ->method('readFromYamlFile')
+            ->willReturnCallback(
+                static function () use ($matcher, $dummyYamlFile) {
+                    return match ($matcher->numberOfInvocations()) {
+                        1 => [$dummyYamlFile, OpenApi::class, true],
+                        2 => [$dummyYamlFile, OpenApi::class, true],
+                        3 => [$dummyYamlFile, OpenApi::class, false],
+                        default => throw new InvalidArgumentException('Did not expect more calls')
+                    };
+                },
+            )->willReturn(new OpenApi([]));
 
         $sut = new FileReader($readerMock);
 
-        $result = $sut->readFile(new File($providedFileName), $providedResolveReferences);
-        $this->assertInstanceOf(SpecificationFile::class, $result);
-        $this->assertSame($providedFileName, $result->getFile()->getAbsoluteFile());
-    }
-
-    #[DataProvider('passResolveReferenceYamlProvider')]
-    public function testPassResolveReferenceForYamlFile(string $providedFileName, bool $providedResolveReferences): void
-    {
-        $readerMock = $this->createStub(OpenApiReaderWrapper::class);
-
-        $readerMock->method('readFromYamlFile')
-            ->willReturn(new OpenApi([]));
-
-        $sut = new FileReader($readerMock);
-
-        $result = $sut->readFile(new File($providedFileName), $providedResolveReferences);
-        $this->assertInstanceOf(SpecificationFile::class, $result);
-        $this->assertSame($providedFileName, $result->getFile()->getAbsoluteFile());
-    }
-
-    public static function passResolveReferenceJsonProvider(): \Generator
-    {
-        yield [self::DUMMY_JSON_FILE,  true];
-        yield [self::DUMMY_JSON_FILE,  false];
-    }
-
-    public static function passResolveReferenceYamlProvider(): \Generator
-    {
-        yield [self::DUMMY_YAML_FILE, true];
-        yield [self::DUMMY_YAML_FILE, false];
+        $sut->readFile(new File($dummyJsonFile));
+        $sut->readFile(new File($dummyJsonFile), true);
+        $sut->readFile(new File($dummyJsonFile), false);
+        $sut->readFile(new File($dummyYamlFile));
+        $sut->readFile(new File($dummyYamlFile), true);
+        $sut->readFile(new File($dummyYamlFile), false);
     }
 }

@@ -44,86 +44,80 @@ class SecurityPathMergerTest extends TestCase
         ];
 
         yield 'full' => [
-            new OpenApi(
-                [
-                    'paths' => [
-                        '/authExisting' => [
-                            'get' => [
-                                'responses' => [
-                                    '200' => ['description' => 'OK'],
-                                ],
-                            ],
-                        ],
-                        '/auth' => [
-                            'get' => [
-                                'responses' => [
-                                    '200' => ['description' => 'OK'],
-                                ],
-                            ],
-                            'post' => [
-                                'responses' => [
-                                    '200' => ['description' => 'OK'],
-                                ],
+            new OpenApi([
+                'paths' => [
+                    '/authExisting' => [
+                        'get' => [
+                            'responses' => [
+                                '200' => ['description' => 'OK'],
                             ],
                         ],
                     ],
-                ]
-            ),
-            new OpenApi(
-                [
-                    'paths' => [
-                        '/auth' => [
-                            'get' => [
-                                'responses' => [
-                                    '200' => ['description' => 'OK'],
-                                ],
+                    '/auth' => [
+                        'get' => [
+                            'responses' => [
+                                '200' => ['description' => 'OK'],
                             ],
-                            'post' => [
-                                'security' => [],
-                                'responses' => [
-                                    '200' => ['description' => 'OK'],
-                                ],
+                        ],
+                        'post' => [
+                            'responses' => [
+                                '200' => ['description' => 'OK'],
                             ],
                         ],
                     ],
-                    'security' => [
-                        'BasicAuth' => [],
-                    ],
-                    'components' => [
-                        'securitySchemes' => [
-                            'BasicAuth' => ['type' => 'http'],
-                        ],
-                    ],
-                ]
-            ),
-            new OpenApi(
-                [
-                    'paths' => [
-                        '/authExisting' => [
-                            'get' => [
-                                'responses' => [
-                                    '200' => ['description' => 'OK'],
-                                ],
+                ],
+            ]),
+            new OpenApi([
+                'paths' => [
+                    '/auth' => [
+                        'get' => [
+                            'responses' => [
+                                '200' => ['description' => 'OK'],
                             ],
                         ],
-                        '/auth' => [
-                            'get' => [
-                                'responses' => [
-                                    '200' => ['description' => 'OK'],
-                                ],
-                                'security' => [
-                                    'BasicAuth' => [],
-                                ],
-                            ],
-                            'post' => [
-                                'responses' => [
-                                    '200' => ['description' => 'OK'],
-                                ],
+                        'post' => [
+                            'security' => [],
+                            'responses' => [
+                                '200' => ['description' => 'OK'],
                             ],
                         ],
                     ],
-                ]
-            ),
+                ],
+                'security' => [
+                    'BasicAuth' => [],
+                ],
+                'components' => [
+                    'securitySchemes' => [
+                        'BasicAuth' => ['type' => 'http'],
+                    ],
+                ],
+            ]),
+            new OpenApi([
+                'paths' => [
+                    '/authExisting' => [
+                        'get' => [
+                            'responses' => [
+                                '200' => ['description' => 'OK'],
+                            ],
+                        ],
+                    ],
+                    '/auth' => [
+                        'get' => [
+                            'responses' => [
+                                '200' => ['description' => 'OK'],
+                            ],
+                            'security' => [
+                                'BasicAuth' => [],
+                            ],
+                        ],
+                        'post' => [
+                            'responses' => [
+                                '200' => ['description' => 'OK'],
+                            ],
+                        ],
+                    ],
+                ],
+            ]),
         ];
     }
 }
