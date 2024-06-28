@@ -15,15 +15,12 @@ jobs:
     strategy:
       matrix:
         include:
-          - php-version: "8.1"
-            composer-deps: lowest
-          - php-version: "8.1"
-            composer-deps: latest
-            with-cs-check: true
           - php-version: "8.2"
-            composer-deps: latest
+            composer-deps: lowest
+            with-cs-check: true
           - php-version: "8.3"
             composer-deps: latest
+            with-cs-check: true
     steps:
       - name: "Checkout"
         uses: "actions/checkout@v2"
