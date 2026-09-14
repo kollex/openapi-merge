@@ -34,9 +34,14 @@ class ApplicationAcceptanceTest extends TestCase
 
         $yamlVersion = InstalledVersions::getVersion('symfony/yaml') ?? '1.0';
         if (version_compare($yamlVersion, '6.1.0', '<')) {
-            self::assertStringEqualsFile(__DIR__ . '/Fixtures/expected_yaml610.yml', $output);
+            $fixture = 'expected_yaml610.yml';
+        } elseif (version_compare($yamlVersion, '8.1.0', '>=')) {
+            // Symfony 8.1 dumps empty inline maps as {} instead of {  }.
+            $fixture = 'expected_yaml8.yml';
         } else {
-            self::assertStringEqualsFile(__DIR__ . '/Fixtures/expected.yml', $output);
+            $fixture = 'expected.yml';
         }
+
+        self::assertStringEqualsFile(__DIR__ . '/Fixtures/' . $fixture, $output);
     }
 }
